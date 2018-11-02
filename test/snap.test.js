@@ -151,7 +151,6 @@ describe('Snap.js',()=> {
   })
 
 })
-.timeout(20000);
 
 function generateConfig(){
   return {

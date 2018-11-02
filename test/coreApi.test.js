@@ -254,7 +254,6 @@ describe('CoreApi.js',()=> {
   })
 
 })
-.timeout(20000);
 
 /**
  * Helper functions

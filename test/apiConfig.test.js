@@ -45,7 +45,6 @@ describe('Config.js',()=> {
     expect(configObj.getSnapApiBaseUrl()).to.be.equal(cons.SNAP_PRODUCTION_BASE_URL);
   });
 })
-.timeout(20000);
 
 
 

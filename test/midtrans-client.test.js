@@ -35,7 +35,6 @@ describe('midtrans-client',()=> {
   })
 
 })
-.timeout(20000);
 
 /**
  * Helper function
