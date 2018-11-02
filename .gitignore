@@ -3,3 +3,4 @@
 .flowconfig
 .sublime-project
 package-lock.json
+/examples/expressApp/node_modules

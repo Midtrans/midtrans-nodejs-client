@@ -416,7 +416,7 @@ Examples are available on [/examples](/examples) folder.
 There are:
 - [Core Api examples](/examples/coreApi)
 - [Snap examples](/examples/snapApi)
-- [Express App examples](/examples/ExpressApp) that implement Snap & Core Api
+- [Express App examples](/examples/expressApp) that implement Snap & Core Api
 
 ## Get help
 

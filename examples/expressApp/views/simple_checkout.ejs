@@ -1,0 +1,56 @@
+<html>
+   <head>
+      <title>Simple Snap Example</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!-- <link rel="stylesheet" href="/static/checkout.css"> -->
+      <script type="text/javascript"
+            src="https://app.sandbox.midtrans.com/snap/snap.js"
+            data-client-key="<%= clientKey %>"></script>
+   </head>
+   <body>
+    <div class='cart'>
+      <input type='hidden' id='snap_token' value="<%= token %>"/>
+      <div class='popup'>
+        <div class='row header'>
+          <span>Items</span>
+          <span>Amount</span>
+        </div>
+
+        <div class='row items'>
+          <span>Sneaker x1</span>
+          <span>200.000</span>
+        </div>
+        <div class='row checkout'>
+          <span><a href='#'></a></span>
+          <button class='checkout-button'>Checkout</button>
+        </div>
+    </div>
+
+
+    <script>
+      var token = document.querySelectorAll('#snap_token')[0].value;
+
+      var checkoutBtn = document.querySelectorAll('.checkout')[0];
+      checkoutBtn.onclick = function(){
+        console.log('opening snap popup:');
+        
+        // Open Snap popup with defined callbacks.
+        snap.pay(token, {
+          onSuccess: function(result) {
+            console.log("SUCCESS", result);
+            alert("Payment accepted \r\n"+JSON.stringify(result));
+          },
+          onPending: function(result) {
+            console.log("Payment pending", result);
+            alert("Payment pending \r\n"+JSON.stringify(result));
+          },
+          onError: function() {
+            console.log("Payment error");
+          }
+        });
+        // For more advanced use, refer to: https://snap-docs.midtrans.com/#snap-js
+
+      }
+    </script>
+   </body>
+</html>

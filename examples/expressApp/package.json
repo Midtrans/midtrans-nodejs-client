@@ -1,0 +1,13 @@
+{
+  "name": "expressapp",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./app.js"
+  },
+  "dependencies": {
+    "ejs": "~2.5.7",
+    "express": "~4.16.0",
+    "midtrans-client": "~1.0.0"
+  }
+}
