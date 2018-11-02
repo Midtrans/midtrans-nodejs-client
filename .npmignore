@@ -1,5 +1,7 @@
 .git
 .gitignore
+/examples
+/test
 /node_modules
 .je-project-settings
 .flowconfig

@@ -2,6 +2,7 @@ Midtrans Client - Node JS
 ===============
 
 [![Build Status](https://travis-ci.org/rizdaprasetya/midtrans-nodejs-client.svg?branch=master)](https://travis-ci.org/rizdaprasetya/midtrans-nodejs-client)
+[![npm version](https://img.shields.io/npm/v/midtrans-client.svg?style=flat-square)](https://www.npmjs.org/package/midtrans-client)
 
 Midtrans ❤️ Node JS! 
 

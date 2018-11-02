@@ -1,4 +1,5 @@
 const midtransClient = require('./../../index.js');
+// const midtransClient = require('midtrans-client'); // use this if installed via NPM
 
 // initialize core api / snap client object
 let apiClient = new midtransClient.Snap({
