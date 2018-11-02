@@ -1,5 +1,6 @@
 .git
 .gitignore
+.travis.yml
 /examples
 /test
 /node_modules
