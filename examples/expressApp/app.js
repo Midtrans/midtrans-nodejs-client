@@ -6,7 +6,8 @@ let app = express();
 app.set('views', 'views');
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
-app.use(express.urlencoded({extended: true})); // to support URL-encoded bodies
+app.use(express.urlencoded({extended: true})); // to support URL-encoded POST body
+app.use(express.json()); // to support parsing JSON POST body
 
 /**
  * ===============
@@ -73,6 +74,40 @@ app.post('/process_core_api', function (req, res) {
   })
 })
 
+/**
+ * ===============
+ * Handling HTTP Post Notification
+ * ===============
+ */
+
+app.post('/notification_handler', function(req, res){
+  let receivedJson = req.body;
+  core.transaction.notification(receivedJson)
+    .then((transactionStatusObject)=>{
+      let orderId = transactionStatusObject.order_id;
+      let transactionStatus = transactionStatusObject.transaction_status;
+      let fraudStatus = transactionStatusObject.fraud_status;
+
+      let summary = `Transaction notification received. Order ID: ${orderId}. Transaction status: ${transactionStatus}. Fraud status: ${fraudStatus}.<br>Raw notification object:<pre>${JSON.stringify(transactionStatusObject, null, 2)}</pre>`;
+
+      // Sample transactionStatus handling logic
+      if (transactionStatus == 'capture'){
+          if (fraudStatus == 'challenge'){
+              // TODO set transaction status on your databaase to 'challenge'
+          } else if (fraudStatus == 'accept'){
+              // TODO set transaction status on your databaase to 'success'
+          }
+      } else if (transactionStatus == 'cancel' ||
+        transactionStatus == 'deny' ||
+        transactionStatus == 'expire'){
+        // TODO set transaction status on your databaase to 'failure'
+      } else if (transactionStatus == 'pending'){
+        // TODO set transaction status on your databaase to 'pending' / waiting payment
+      }
+      console.log(summary);
+      res.send(summary);
+    });
+})
 
 /**
  * ===============
