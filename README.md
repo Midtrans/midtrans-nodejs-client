@@ -50,7 +50,6 @@ let coreApi = new midtransClient.CoreApi({
         serverKey : 'YOUR_SERVER_KEY',
         clientKey : 'YOUR_CLIENT_KEY'
     });
-)
 ```
 
 
@@ -62,7 +61,6 @@ let snap = new midtransClient.Snap({
         serverKey : 'YOUR_SERVER_KEY',
         clientKey : 'YOUR_CLIENT_KEY'
     });
-)
 ```
 
 You can also re-set config using `Snap.apiConfig.set( ... )`
@@ -111,7 +109,7 @@ createTransactionToken(parameter)
 // return Snap API /transaction redirect_url as Promise of String
 createTransactionRedirectUrl(parameter)
 ```
-`parameter` is Dictionary or String of JSON of [SNAP Parameter](https://snap-docs.midtrans.com/#json-objects)
+`parameter` is Object or String of JSON of [SNAP Parameter](https://snap-docs.midtrans.com/#json-objects)
 
 
 #### Get Snap Token
@@ -124,7 +122,6 @@ let snap = new midtransClient.Snap({
         serverKey : 'YOUR_SERVER_KEY',
         clientKey : 'YOUR_CLIENT_KEY'
     });
-);
 
 let parameter = {
     "transaction_details": {
@@ -203,7 +200,6 @@ let snap = new midtransClient.Snap({
         serverKey : 'YOUR_SERVER_KEY',
         clientKey : 'YOUR_CLIENT_KEY'
     });
-);
 
 let parameter = {
     "transaction_details": {
@@ -271,7 +267,7 @@ cardToken(parameter={})
  */
 cardPointInquiry(tokenId)
 ```
-`parameter` is Dictionary or String of JSON of [SNAP Parameter](https://api-docs.midtrans.com/#json-objects)
+`parameter` is Object or String of JSON of [Core API Parameter](https://api-docs.midtrans.com/#json-objects)
 
 #### Credit Card Get Token
 
@@ -287,7 +283,6 @@ let core = new midtransClient.CoreApi({
         serverKey : 'YOUR_SERVER_KEY',
         clientKey : 'YOUR_CLIENT_KEY'
     });
-);
 
 let parameter = {
     "payment_type": "credit_card",
@@ -323,7 +318,6 @@ let apiClient = new midtransClient.Snap({
         serverKey : 'YOUR_SERVER_KEY',
         clientKey : 'YOUR_CLIENT_KEY'
     });
-);
 
 apiClient.transaction.notification(notificationJson)
     .then((statusResponse)=>{
