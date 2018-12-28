@@ -228,7 +228,7 @@ snap.createTransaction(parameter)
 
 ### 2.2.C Core API (VT-Direct)
 
-You can see some Core API examples [here](examples/core_api).
+You can see some Core API examples [here](examples/coreApi).
 
 Available methods for `CoreApi` class
 ```javascript
@@ -308,7 +308,7 @@ core.charge(parameter)
 
 Create separated web endpoint (notification url) to receive HTTP POST notification callback/webhook. 
 HTTP notification will be sent whenever transaction status is changed.
-Example also available [here](examples/transaction_actions/notification_example.py)
+Example also available [here](examples/transaction_actions/notificationExample.py)
 
 ```javascript
 const midtransClient = require('midtrans-client');
