@@ -1,8 +1,11 @@
 Midtrans Client - Node JS
 ===============
+[![NPM](https://nodei.co/npm/midtrans-client.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/midtrans-client/)
 
-[![Build Status](https://travis-ci.org/rizdaprasetya/midtrans-nodejs-client.svg?branch=master)](https://travis-ci.org/rizdaprasetya/midtrans-nodejs-client)
 [![npm version](https://img.shields.io/npm/v/midtrans-client.svg?style=flat-square)](https://www.npmjs.org/package/midtrans-client)
+[![Build Status](https://travis-ci.org/rizdaprasetya/midtrans-nodejs-client.svg?branch=master)](https://travis-ci.org/rizdaprasetya/midtrans-nodejs-client)
+![NPM download/month](https://img.shields.io/npm/dm/midtrans-client.svg)
+![NPM download total](https://img.shields.io/npm/dt/midtrans-client.svg)
 
 Midtrans ❤️ Node JS! 
 
@@ -308,7 +311,7 @@ core.charge(parameter)
 
 Create separated web endpoint (notification url) to receive HTTP POST notification callback/webhook. 
 HTTP notification will be sent whenever transaction status is changed.
-Example also available [here](examples/transaction_actions/notificationExample.py)
+Example also available [here](examples/transactionActions/notificationExample.js)
 
 ```javascript
 const midtransClient = require('midtrans-client');
