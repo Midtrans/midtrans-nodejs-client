@@ -408,7 +408,22 @@ apiClient.transaction.refund('YOUR_ORDER_ID OR TRANSACTION_ID',parameter)
     });
 ```
 
-## 3. Examples
+## 3. Handling Error / Exception
+When using function that result in Midtrans API call e.g: `core.charge(...)` or `snap.createTransaction(...)` 
+there's a chance it may throw error (`MidtransError` object), the error object will contains below properties that can be used as information to your error handling logic:
+```javascript
+snap.createTransaction(parameter)
+      .then((res)=>{
+      })
+      .catch((e)=>{
+        e.message // basic error message string
+        e.httpStatusCode // HTTP status code e.g: 400, 401, etc.
+        e.ApiResponse // JSON of the API response 
+        e.rawHttpClientData // raw Axios response object
+      })
+```
+
+## 4. Examples
 Examples are available on [/examples](/examples) folder.
 There are:
 - [Core Api examples](/examples/coreApi)
