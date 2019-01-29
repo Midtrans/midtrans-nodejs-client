@@ -150,6 +150,24 @@ describe('Snap.js',()=> {
       })
   })
 
+  it('able to throw custom MidtransError',()=>{
+    let config = generateConfig();
+    let snap = new Snap(config);
+    let param = generateParamMin();
+    param.transaction_details.gross_amount = 0;
+    return snap.createTransaction()
+      .then((res)=>{
+      })
+      .catch((e)=>{
+        expect(e.message).to.includes('400');
+        expect(e.httpStatusCode).to.equals(400);
+        expect(e.ApiResponse).to.be.an('object');
+        expect(e.ApiResponse.error_messages).to.be.an('array');
+        expect(e.rawHttpClientData).to.be.an('object');
+        expect(e.rawHttpClientData).to.have.property('data');
+      })
+  })
+
 })
 
 function generateConfig(){

@@ -253,6 +253,22 @@ describe('CoreApi.js',()=> {
       })
   })
 
+  it('able to throw custom MidtransError',()=>{
+    
+    let core = new CoreApi(generateConfig());
+    let parameter = generateParamMin();
+    parameter.transaction_details.gross_amount=0;
+    return core.charge(parameter)
+      .catch((e)=>{
+        expect(e.message).to.includes('400');
+        expect(e.httpStatusCode).to.equals('400');
+        expect(e.ApiResponse).to.be.an('object');
+        expect(e.ApiResponse.validation_messages).to.be.an('array');
+        expect(e.rawHttpClientData).to.be.an('object');
+        expect(e.rawHttpClientData).to.have.property('data');
+      })
+  })
+
 })
 
 /**
