@@ -2,14 +2,12 @@
 
 <head>
   <title>Checkout</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/featherlight/1.7.12/featherlight.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
   <script type="text/javascript" src="https://api.sandbox.midtrans.com/v2/assets/js/midtrans.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/featherlight/1.7.12/featherlight.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/picomodal/3.0.0/picoModal.js"></script>
 
   <h1>Checkout</h1>
   <form action="#" method="POST" id="payment-form">
@@ -43,9 +41,9 @@
   </form>
 
   <code>
-    Transaction Result:
+    <b>Transaction Result:</b>
     <pre id="result"> Awaiting transactions... </pre>
-    Transaction verified status result:
+    <b>Transaction verified status result:</b>
     <pre id="status-result"> Awaiting transactions... </pre>
     <pre>
   <b>Testing cards:</b>
@@ -71,21 +69,21 @@
       Veritrans.client_key = "<%= clientKey %>";
       var getCardData = function () {
         return {
-          "card_number": $(".card-number").val(),
-          "card_exp_month": $(".card-expiry-month").val(),
-          "card_exp_year": $(".card-expiry-year").val(),
-          "card_cvv": $(".card-cvv").val(),
+          "card_number": document.querySelector(".card-number").value,
+          "card_exp_month": document.querySelector(".card-expiry-month").value,
+          "card_exp_year": document.querySelector(".card-expiry-year").value,
+          "card_cvv": document.querySelector(".card-cvv").value,
         }
       };
 
       // On Submit button clicked
-      $(".submit-button").click(function (event) {
+      document.querySelector(".submit-button").onclick = function (event) {
         console.log("SUBMIT button clicked");
         // [1] Use card data to get card token on the callback
         Veritrans.token(getCardData, callbackCardToken);
 
         event.preventDefault(); return false;
-      });
+      };
 
       function callbackCardToken(response) {
         // Card Token callback triggered when `Veritrans.token` completed.
@@ -97,7 +95,7 @@
             method : "POST",
             body: JSON.stringify({ 
               "token_id" : response.token_id,
-              "authenticate_3ds" : $('.authenticate_3ds')[0].checked
+              "authenticate_3ds" : document.querySelector('.authenticate_3ds').checked
             }),
             headers: {'Content-Type': 'application/json'},
           })
@@ -123,7 +121,7 @@
         console.log('callback3dsAuthentication triggered with param:',response);
         if (response.redirect_url){
           // [3.2] 3ds authentication redirect_url received, open iframe to display to customer
-          openPopup(response.redirect_url);
+          popupModal.openPopup(response.redirect_url);
         } 
         else if (response.status_code){
           // [3.3] 3DS authentication result received, which is also transaction result
@@ -137,10 +135,10 @@
       function transactionComplete(responseObj){
         // Close 3DS popup, then display the result (for example)
         console.log("transactionComplete with status: ",responseObj);
-        closePopup();
+        popupModal.closePopup();
 
-        document.getElementById("result").innerText = JSON.stringify(responseObj, null, 2);
-        document.getElementById("result").scrollIntoView();
+        document.querySelector("#result").innerText = JSON.stringify(responseObj, null, 2);
+        document.querySelector("#result").scrollIntoView();
         
         if (responseObj.transaction_id){
           // [4] Inform the result to backend update DB status and verify to Midtrans
@@ -154,7 +152,7 @@
             // Transaction status received after being verified
             console.log("Check transaction response:",statusResponseObj);
             // transactionComplete(statusResponseObj);
-            document.getElementById("status-result").innerText = 
+            document.querySelector("#status-result").innerText = 
               JSON.stringify(statusResponseObj, null, 2);
 
           })
@@ -162,20 +160,25 @@
       }
 
       // helper functions below
-      function openPopup(url) {
-        $.featherlight({
-          iframe: url, 
-          iframeWidth: 700, 
-          iframeHeight: 500,
-          closeOnClick: true,
-          closeOnEsc: false,
-          closeIcon:'X'
-        });
-      }
-
-      function closePopup() {
-        $.featherlight.close();
-      }
+      let popupModal = (function(){
+        let modal = null;
+        return {
+          openPopup(url){
+            modal = picoModal({
+              content:'<iframe frameborder="0" width="100%" height="100%" src="'+url+'"></iframe>',
+              width: "75%", 
+              closeButton: false, 
+              overlayClose: false,
+              escCloses: false
+            }).show();
+          },
+          closePopup(){
+            try{
+              modal.close();
+            } catch(e) {}
+          }
+        }
+      }());
   </script>
 </body>
 </html>
