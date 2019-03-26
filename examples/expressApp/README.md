@@ -10,7 +10,8 @@ Midtrans Snap with Express (Node JS). To start:
 3. Install dependencies `npm install`
 4. Run the web server using:
 	- `node app.js`, or
-	- `npm start`
+	- `npm start`, or
+  - \*for development `npm run start:dev`
 
 The app will run at port 3000.
 Open `localhost:3000` from browser.
