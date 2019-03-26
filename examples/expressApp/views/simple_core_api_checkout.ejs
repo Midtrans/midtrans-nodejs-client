@@ -88,11 +88,11 @@
       });
 
       function callbackCardToken(response) {
-        // [2] Card Token callback triggered when `Veritrans.token` completed.
+        // Card Token callback triggered when `Veritrans.token` completed.
         console.log("Get token response:",response);
         if (response.status_code == "200") {
           // success to get card token
-          // Send AJAX to let backend charge the card using the card token_id
+          // [2] Send AJAX to let backend charge the card using the card token_id
           fetch("/charge_core_api_ajax", {
             method : "POST",
             body: JSON.stringify({ 
@@ -105,7 +105,7 @@
           .then(function(responseObj) {
             console.log("Charge response:",responseObj);
             if (responseObj.status_code == "201"){
-              // Transaction need 3DS authentication
+              // [3.1] Transaction need 3DS authentication
               Veritrans.authenticate(responseObj.redirect_url, callback3dsAuthentication);
             } else {
               // Transaction do not need 3DS Authentication, transaction is complete with result
@@ -122,12 +122,11 @@
       function callback3dsAuthentication(response){
         console.log('callback3dsAuthentication triggered with param:',response);
         if (response.redirect_url){
-          // [3] Transaction need 3DS authentication
-          // redirect_url received, open the URL as iframe to display to customer
+          // [3.2] 3ds authentication redirect_url received, open iframe to display to customer
           openPopup(response.redirect_url);
         } 
         else if (response.status_code){
-          // [4] 3DS authentication result received
+          // [3.3] 3DS authentication result received, which is also transaction result
           transactionComplete(response);
         } 
         else {
@@ -144,7 +143,7 @@
         document.getElementById("result").scrollIntoView();
         
         if (responseObj.transaction_id){
-          // [5] Inform the result to backend update DB status and verify to Midtrans
+          // [4] Inform the result to backend update DB status and verify to Midtrans
           fetch('/check_transaction_status', {
             method : "POST",
             body: JSON.stringify({ "transaction_id" : responseObj.transaction_id }),
