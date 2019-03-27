@@ -48,16 +48,19 @@ app.get('/simple_checkout', function (req, res) {
  * ===============
  */
 
+// [0] Setup API client and config
 let core = new midtransClient.CoreApi({
   isProduction : false,
   serverKey : 'SB-Mid-server-GwUP_WGbJPXsDzsNEBRs8IYA',
   clientKey : 'SB-Mid-client-61XuGAwQ8Bj8LxSS'
 });
 
+// [1] Render HTML+JS web page to get card token_id and [3] 3DS authentication
 app.get('/simple_core_api_checkout', function (req, res) {
   res.render('simple_core_api_checkout',{ clientKey: core.apiConfig.clientKey })
 })
 
+// [2] Handle Core API credit card token_id charge
 app.post('/charge_core_api_ajax', function (req, res) {
   console.log(`- Received charge request:`,req.body);
   console.log(req.body.authenticate_3ds);
@@ -78,7 +81,7 @@ app.post('/charge_core_api_ajax', function (req, res) {
 })
 
 
-// Handle Core API check transaction status
+// [4] Handle Core API check transaction status
 app.post('/check_transaction_status', function(req, res){
   console.log(`- Received check transaction status request:`,req.body);
   core.transaction.status(req.body.transaction_id)
@@ -89,6 +92,7 @@ app.post('/check_transaction_status', function(req, res){
 
       let summary = `Transaction Result. Order ID: ${orderId}. Transaction status: ${transactionStatus}. Fraud status: ${fraudStatus}.<br>Raw transaction status:<pre>${JSON.stringify(transactionStatusObject, null, 2)}</pre>`;
 
+      // [5.A] Handle transaction status on your backend
       // Sample transactionStatus handling logic
       if (transactionStatus == 'capture'){
           if (fraudStatus == 'challenge'){
@@ -124,6 +128,7 @@ app.post('/notification_handler', function(req, res){
 
       let summary = `Transaction notification received. Order ID: ${orderId}. Transaction status: ${transactionStatus}. Fraud status: ${fraudStatus}.<br>Raw notification object:<pre>${JSON.stringify(transactionStatusObject, null, 2)}</pre>`;
 
+      // [5.B] Handle transaction status on your backend via notification alternatively
       // Sample transactionStatus handling logic
       if (transactionStatus == 'capture'){
           if (fraudStatus == 'challenge'){

@@ -91,6 +91,7 @@
         if (response.status_code == "200") {
           // success to get card token
           // [2] Send AJAX to let backend charge the card using the card token_id
+          // Check backend implementation on `app.js` file, section `[2]`
           fetch("/charge_core_api_ajax", {
             method : "POST",
             body: JSON.stringify({ 
@@ -142,6 +143,7 @@
         
         if (responseObj.transaction_id){
           // [4] Inform the result to backend update DB status and verify to Midtrans
+          // Check backend implementation on `app.js` file, section `[4]`
           fetch('/check_transaction_status', {
             method : "POST",
             body: JSON.stringify({ "transaction_id" : responseObj.transaction_id }),
