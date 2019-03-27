@@ -44,7 +44,7 @@ app.get('/simple_checkout', function (req, res) {
 
 /**
  * ===============
- * Using Core API
+ * Using Core API - Credit Card
  * ===============
  */
 
@@ -146,6 +146,29 @@ app.post('/notification_handler', function(req, res){
       console.log(summary);
       res.send(summary);
     });
+})
+
+/**
+ * ===============
+ * Using Core API - other payment method, example: Permata VA
+ * ===============
+ */
+app.get('/simple_core_api_checkout_permata', function (req, res) {
+  console.log(`- Received charge request for Permata VA`);
+  core.charge({
+    "payment_type": "bank_transfer",
+    "transaction_details": {
+      "gross_amount": 200000,
+      "order_id": "order-id-node-"+Math.round((new Date()).getTime() / 1000),
+    }
+  })
+  .then((apiResponse)=>{
+    res.render('simple_core_api_checkout_permata', {
+      vaNumber: apiResponse.permata_va_number,
+      amount: apiResponse.gross_amount,
+      orderId: apiResponse.order_id
+    });
+  })
 })
 
 /**
