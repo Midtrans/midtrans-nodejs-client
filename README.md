@@ -294,7 +294,8 @@ let parameter = {
         "order_id": "test-transaction-54321",
     },
     "credit_card":{
-        "token_id": 'CREDIT_CARD_TOKEN' // change with your card token
+        "token_id": 'CREDIT_CARD_TOKEN', // change with your card token
+        "authentication": true
     }
 };
 
