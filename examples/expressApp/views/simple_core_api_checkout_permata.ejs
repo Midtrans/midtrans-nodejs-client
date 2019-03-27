@@ -1,0 +1,19 @@
+<html>
+   <head>
+      <title>Simple Core API Permata VA Example</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+   </head>
+   <body>
+    <div class='main'>
+      <h3>Permata VA Transaction Created</h3>
+      <b>VA Number For Customer To Pay:</b> <br>
+      Please transfer to Permata Bank with account number: <b><code><%= vaNumber %></code></b> <br>
+      <b>Amount:</b> <br>
+      <code>Rp. <%= amount %></code> <br>
+      <b>Order ID:</b> <br>
+      <code><%= orderId %></code> <br>
+      <br><hr>
+      <small>Check `app.js` file, section `/simple_core_api_checkout_permata` for the backend implementation</small>
+    </div>
+   </body>
+</html>

@@ -2,17 +2,15 @@
 
 <head>
   <title>Checkout</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/featherlight/1.7.12/featherlight.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
   <script type="text/javascript" src="https://api.sandbox.midtrans.com/v2/assets/js/midtrans.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/featherlight/1.7.12/featherlight.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/picomodal/3.0.0/picoModal.js"></script>
 
   <h1>Checkout</h1>
-  <form action="/process_core_api" method="POST" id="payment-form">
+  <form action="#" method="POST" id="payment-form">
     <fieldset>
       <legend>Checkout</legend>
       <small><strong>Field that may be presented to customer:</strong></small>
@@ -34,7 +32,7 @@
       <small><strong>Fields that shouldn't be presented to the customer:</strong></small>
       <p>
         <label>3D Secure</label>
-        <input type="checkbox" name="secure" value="true" checked>
+        <input class="authenticate_3ds" type="checkbox" name="authenticate_3ds" value="true" checked>
       </p>
 
       <input id="token_id" name="token_id" type="hidden" />
@@ -43,92 +41,149 @@
   </form>
 
   <code>
+    <b>Transaction Result:</b>
+    <pre id="result"> Awaiting transactions... </pre>
+    <b>Transaction verified status result:</b>
+    <pre id="status-result"> Awaiting transactions... </pre>
     <pre>
   <b>Testing cards:</b>
 
     <b>For 3D Secure:</b>
-    Visa        4811 1111 1111 1114
-    MasterCard  5211 1111 1111 1117
+    Visa success              4811 1111 1111 1114
+    Visa deny by bank         4711 1111 1111 1115
+    Visa deny by FDS          4611 1111 1111 1116
 
-    <b>For Non 3D Secure:</b>
-    Visa success      4011 1111 1111 1112
-    Visa challenge    4111 1111 1111 1111
-    Visa deny by FDS  4211 1111 1111 1110
+    MasterCard success        5211 1111 1111 1117
+    MasterCard deny by bank   5111 1111 1111 1118
+    MasterCard deny by FDS    5411 1111 1111 1115
 
-    MasterCard success      5481 1611 1111 1081
-    MasterCard challenge    5110 1111 1111 1119
-    MasterCard deny by FDS  5210 1111 1111 1118
-
+    Challenge by FDS          4511 1111 1111 1117 
     </pre>
   </code>
 
+  <hr>
+  <small>Check `app.js` file, section `Using Core API - Credit Card` for the backend implementation</small>
+
   <!-- Javascript for token generation -->
   <script type="text/javascript">
-    $(function () {
-      // Sandbox URL
+      // Set as sandbox URL, remove this line for Production mode.
       Veritrans.url = "https://api.sandbox.midtrans.com/v2/token";
       // TODO: Change with your client key.
       Veritrans.client_key = "<%= clientKey %>";
-      var card = function () {
+      var getCardData = function () {
         return {
-          "card_number": $(".card-number").val(),
-          "card_exp_month": $(".card-expiry-month").val(),
-          "card_exp_year": $(".card-expiry-year").val(),
-          "card_cvv": $(".card-cvv").val(),
-          "secure": $('[name=secure]')[0].checked,
-          // "bank": "bni", // optional acquiring bank
-          "gross_amount": 200000
+          "card_number": document.querySelector(".card-number").value,
+          "card_exp_month": document.querySelector(".card-expiry-month").value,
+          "card_exp_year": document.querySelector(".card-expiry-year").value,
+          "card_cvv": document.querySelector(".card-cvv").value,
         }
       };
 
-      function callback(response) {
-        console.log(response);
-        if (response.redirect_url) {
-          console.log("3D SECURE");
-          // 3D Secure transaction, please open this popup
-          openDialog(response.redirect_url);
+      // On Submit button clicked
+      document.querySelector(".submit-button").onclick = function (event) {
+        console.log("SUBMIT button clicked");
+        // [1] Use card data to get card token on the callback
+        Veritrans.token(getCardData, callbackCardToken);
 
-        }
-        else if (response.status_code == "200") {
-          // Success 3-D Secure or success normal
-          closeDialog();
-          // Submit form
-          $("#token_id").val(response.token_id);
-          $("#payment-form").submit();
+        event.preventDefault(); return false;
+      };
+
+      function callbackCardToken(response) {
+        // Card Token callback triggered when `Veritrans.token` completed.
+        console.log("Get token response:",response);
+        if (response.status_code == "200") {
+          // success to get card token
+          // [2] Send AJAX to let backend charge the card using the card token_id
+          // Check backend implementation on `app.js` file, section `[2]`
+          fetch("/charge_core_api_ajax", {
+            method : "POST",
+            body: JSON.stringify({ 
+              "token_id" : response.token_id,
+              "authenticate_3ds" : document.querySelector('.authenticate_3ds').checked
+            }),
+            headers: {'Content-Type': 'application/json'},
+          })
+          .then(function(response) { return response.json(); })
+          .then(function(responseObj) {
+            console.log("Charge response:",responseObj);
+            if (responseObj.status_code == "201"){
+              // [3.1] Transaction need 3DS authentication
+              Veritrans.authenticate(responseObj.redirect_url, callback3dsAuthentication);
+            } else {
+              // Transaction do not need 3DS Authentication, transaction is complete with result
+              transactionComplete(responseObj);
+            }
+          })
         }
         else {
-          closeDialog();
-          // Failed request token
-          console.log(response.status_code);
-          alert(response.status_message);
-          $('button').removeAttr("disabled");
+          // fail to get card token
+          transactionComplete(responseObj);
         }
       }
 
-      function openDialog(url) {
-        $.featherlight({
-          iframe: url, 
-          iframeMaxWidth: '80%', 
-          iframeWidth: 700, 
-          iframeHeight: 500,
-          closeOnClick: false,
-          closeOnEsc: false,
-          closeIcon:''
-        });
+      function callback3dsAuthentication(response){
+        console.log('callback3dsAuthentication triggered with param:',response);
+        if (response.redirect_url){
+          // [3.2] 3ds authentication redirect_url received, open iframe to display to customer
+          popupModal.openPopup(response.redirect_url);
+        } 
+        else if (response.status_code){
+          // [3.3] 3DS authentication result received, which is also transaction result
+          transactionComplete(response);
+        } 
+        else {
+          // handle exceptional case
+        }
       }
 
-      function closeDialog() {
-        $.featherlight.close();
+      function transactionComplete(responseObj){
+        // Close 3DS popup, then display the result (for example)
+        console.log("transactionComplete with status: ",responseObj);
+        popupModal.closePopup();
+
+        document.querySelector("#result").innerText = JSON.stringify(responseObj, null, 2);
+        document.querySelector("#result").scrollIntoView();
+        
+        if (responseObj.transaction_id){
+          // [4] Inform the result to backend update DB status and verify to Midtrans
+          // Check backend implementation on `app.js` file, section `[4]`
+          fetch('/check_transaction_status', {
+            method : "POST",
+            body: JSON.stringify({ "transaction_id" : responseObj.transaction_id }),
+            headers: {'Content-Type': 'application/json'},
+          })
+          .then(function(statusResponse) { return statusResponse.json(); } )
+          .then(function(statusResponseObj) {
+            // Transaction status received after being verified
+            console.log("Check transaction response:",statusResponseObj);
+            // transactionComplete(statusResponseObj);
+            document.querySelector("#status-result").innerText = 
+              JSON.stringify(statusResponseObj, null, 2);
+
+          })
+        }
       }
 
-      $(".submit-button").click(function (event) {
-        console.log("SUBMIT");
-        event.preventDefault();
-        $(this).attr("disabled", "disabled");
-        Veritrans.token(card, callback);
-        return false;
-      });
-    });
+      // helper functions below
+      let popupModal = (function(){
+        let modal = null;
+        return {
+          openPopup(url){
+            modal = picoModal({
+              content:'<iframe frameborder="0" width="100%" height="100%" src="'+url+'"></iframe>',
+              width: "75%", 
+              closeButton: false, 
+              overlayClose: false,
+              escCloses: false
+            }).show();
+          },
+          closePopup(){
+            try{
+              modal.close();
+            } catch(e) {}
+          }
+        }
+      }());
   </script>
 </body>
 </html>

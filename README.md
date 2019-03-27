@@ -294,7 +294,8 @@ let parameter = {
         "order_id": "test-transaction-54321",
     },
     "credit_card":{
-        "token_id": 'CREDIT_CARD_TOKEN' // change with your card token
+        "token_id": 'CREDIT_CARD_TOKEN', // change with your card token
+        "authentication": true
     }
 };
 
@@ -306,8 +307,16 @@ core.charge(parameter)
     });
 ```
 
+#### Credit Card 3DS Authentication
+
+The credit card charge result may contains `redirect_url` for 3DS authentication. 3DS Authentication should be handled on Frontend please refer to [API docs](https://api-docs.midtrans.com/#card-features-3d-secure)
+
+For full example on Credit Card 3DS transaction refer to:
+- [Express App examples](/examples/expressApp) that implement Snap & Core Api
 
 ### 2.3 Handle HTTP Notification
+
+> **IMPORTANT NOTE**: To update transaction status on your backend/database, **DO NOT** solely rely on frontend callbacks! For security reason to make sure the status is authentically coming from Midtrans, only update transaction status based on HTTP Notification or API Get Status.
 
 Create separated web endpoint (notification url) to receive HTTP POST notification callback/webhook. 
 HTTP notification will be sent whenever transaction status is changed.

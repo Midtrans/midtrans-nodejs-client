@@ -44,21 +44,26 @@ app.get('/simple_checkout', function (req, res) {
 
 /**
  * ===============
- * Using Core API
+ * Using Core API - Credit Card
  * ===============
  */
 
+// [0] Setup API client and config
 let core = new midtransClient.CoreApi({
   isProduction : false,
   serverKey : 'SB-Mid-server-GwUP_WGbJPXsDzsNEBRs8IYA',
   clientKey : 'SB-Mid-client-61XuGAwQ8Bj8LxSS'
 });
 
+// [1] Render HTML+JS web page to get card token_id and [3] 3DS authentication
 app.get('/simple_core_api_checkout', function (req, res) {
   res.render('simple_core_api_checkout',{ clientKey: core.apiConfig.clientKey })
 })
 
-app.post('/process_core_api', function (req, res) {
+// [2] Handle Core API credit card token_id charge
+app.post('/charge_core_api_ajax', function (req, res) {
+  console.log(`- Received charge request:`,req.body);
+  console.log(req.body.authenticate_3ds);
   core.charge({
     "payment_type": "credit_card",
     "transaction_details": {
@@ -66,12 +71,45 @@ app.post('/process_core_api', function (req, res) {
       "order_id": "order-id-node-"+Math.round((new Date()).getTime() / 1000),
     },
     "credit_card":{
-      "token_id": req.body.token_id
+      "token_id": req.body.token_id,
+      "authentication": req.body.authenticate_3ds,
     }
   })
   .then((apiResponse)=>{
-    res.send(`API response:<br><pre>${JSON.stringify(apiResponse, null, 2)}</pre>`)
+    res.send(`${JSON.stringify(apiResponse, null, 2)}`)
   })
+})
+
+
+// [4] Handle Core API check transaction status
+app.post('/check_transaction_status', function(req, res){
+  console.log(`- Received check transaction status request:`,req.body);
+  core.transaction.status(req.body.transaction_id)
+    .then((transactionStatusObject)=>{
+      let orderId = transactionStatusObject.order_id;
+      let transactionStatus = transactionStatusObject.transaction_status;
+      let fraudStatus = transactionStatusObject.fraud_status;
+
+      let summary = `Transaction Result. Order ID: ${orderId}. Transaction status: ${transactionStatus}. Fraud status: ${fraudStatus}.<br>Raw transaction status:<pre>${JSON.stringify(transactionStatusObject, null, 2)}</pre>`;
+
+      // [5.A] Handle transaction status on your backend
+      // Sample transactionStatus handling logic
+      if (transactionStatus == 'capture'){
+          if (fraudStatus == 'challenge'){
+              // TODO set transaction status on your databaase to 'challenge'
+          } else if (fraudStatus == 'accept'){
+              // TODO set transaction status on your databaase to 'success'
+          }
+      } else if (transactionStatus == 'cancel' ||
+        transactionStatus == 'deny' ||
+        transactionStatus == 'expire'){
+        // TODO set transaction status on your databaase to 'failure'
+      } else if (transactionStatus == 'pending'){
+        // TODO set transaction status on your databaase to 'pending' / waiting payment
+      }
+      console.log(summary);
+      res.send(JSON.stringify(transactionStatusObject, null, 2));
+    });
 })
 
 /**
@@ -90,6 +128,7 @@ app.post('/notification_handler', function(req, res){
 
       let summary = `Transaction notification received. Order ID: ${orderId}. Transaction status: ${transactionStatus}. Fraud status: ${fraudStatus}.<br>Raw notification object:<pre>${JSON.stringify(transactionStatusObject, null, 2)}</pre>`;
 
+      // [5.B] Handle transaction status on your backend via notification alternatively
       // Sample transactionStatus handling logic
       if (transactionStatus == 'capture'){
           if (fraudStatus == 'challenge'){
@@ -107,6 +146,29 @@ app.post('/notification_handler', function(req, res){
       console.log(summary);
       res.send(summary);
     });
+})
+
+/**
+ * ===============
+ * Using Core API - other payment method, example: Permata VA
+ * ===============
+ */
+app.get('/simple_core_api_checkout_permata', function (req, res) {
+  console.log(`- Received charge request for Permata VA`);
+  core.charge({
+    "payment_type": "bank_transfer",
+    "transaction_details": {
+      "gross_amount": 200000,
+      "order_id": "order-id-node-"+Math.round((new Date()).getTime() / 1000),
+    }
+  })
+  .then((apiResponse)=>{
+    res.render('simple_core_api_checkout_permata', {
+      vaNumber: apiResponse.permata_va_number,
+      amount: apiResponse.gross_amount,
+      orderId: apiResponse.order_id
+    });
+  })
 })
 
 /**
