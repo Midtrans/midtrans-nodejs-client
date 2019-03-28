@@ -180,4 +180,8 @@ app.get('/simple_core_api_checkout_permata', function (req, res) {
 app.get('/', function (req, res) {
   res.render('index');
 })
+// credit card frontend demo
+app.get('/core_api_credit_card_frontend_sample', function (req, res) {
+  res.render('core_api_credit_card_frontend_sample',{ clientKey: core.apiConfig.clientKey });
+})
 app.listen(3000, () => console.log(`ExpressApp listening on localhost port 3000!`))

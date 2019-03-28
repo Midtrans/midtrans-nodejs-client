@@ -1,0 +1,215 @@
+<html>
+
+<head>
+  <title>Core API Credit Card Frontend Sample</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/themes/prism.css" />
+  <style type="text/css">
+    pre{
+      font-size:75%;
+    }
+  </style>
+</head>
+
+<body>
+  <script type="text/javascript" src="https://api.sandbox.midtrans.com/v2/assets/js/midtrans.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/picomodal/3.0.0/picoModal.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.js"></script>
+
+  <p>This page is to further demonstrate how to implement frontend processes for Credit Card transactions</p>
+
+  <form id="token-form">
+    <fieldset>
+      <legend>1. Get Card Token Step</legend>
+      <p>
+        <label>Card Number</label>
+        <input id="card-number" value="4811 1111 1111 1114" size="23" type="text" autocomplete="off" />
+      </p>
+      <p>
+        <label>Expiration (MM/YYYY)</label>
+        <input id="card-expiry-month" value="12" placeholder="MM" size="2" type="text" />
+        <span> / </span>
+        <input id="card-expiry-year" value="2020" placeholder="YYYY" size="4" type="text" />
+      </p>
+      <p>
+        <label>CVV</label>
+        <input id="card-cvv" value="123" size="4" type="password" autocomplete="off" />
+      </p>
+      <button class="submit-button" type="submit">Process</button>
+
+      <p>
+        <label>Result card token_id</label>
+        <input type="text" id="token_id_result">
+      </p>
+
+      <p>
+        <label>JS implementation:</label>
+        <pre><code class="language-javascript" id="token-implementation"></code></pre>
+      </p>
+    </fieldset>
+  </form>
+  <br>
+
+  <form id="charge-form">
+    <fieldset>
+      <legend>2. Charge process is done via Backend</legend>
+      <p>
+        <label>Card Token ID</label>
+        <input type="text" id="token_id" placeholder="481111-1114-0b9ddf4d-eb29-4d29-8750-15555531d2e7" required>
+      </p>
+      <p>
+        <label>3DS Authentication enabled</label>
+        <input type="checkbox" id="authenticate_3ds" checked>
+      </p>
+      <button class="submit-button" type="submit">Process</button>
+
+      <p>
+        <label>Result redirect url (if 3DS)</label>
+        <input type="text" id="redirect_url_result">
+      </p>
+
+      <small>Check `app.js` file, section `/charge_core_api_ajax` for the backend implementation</small>
+    </fieldset>
+  </form>
+
+  <br>
+  <form id="authentication-form">
+    <fieldset>
+      <legend>3. 3DS Authentication Step</legend>
+      <p>
+        <label>Redirect URL</label>
+        <input id="redirect_url" placeholder="https://api.sandbox.veritrans.co.id/v2/token/rba/redirect/481111-1114-004cebd3-8fb0-48f7-bf49-eb4e5df54602" size="35" type="text" required/>
+      </p>
+      <button class="submit-button" type="submit">Process</button>
+
+      <p>
+        <label>Result:</label>
+        <pre><code id="result" class="language-javascript">...</code></pre>
+      </p>
+
+      <p>
+        <label>JS implementation:</label>
+        <pre><code class="language-javascript" id="authentication-implementation"></code></pre>
+      </p>
+    </fieldset>
+  </form>
+
+  <!-- JS implementation to get card token -->
+  <script type="text/javascript" id="js-card-token">
+    document.querySelector("#token-form").onsubmit = function(e){
+      // Set as sandbox URL, remove this line for Production mode.
+      Veritrans.url = "https://api.sandbox.midtrans.com/v2/token";
+      // TODO: Change with your client key.
+      Veritrans.client_key = "<%= clientKey %>";
+      Veritrans.token(
+        function(){
+          return {
+            "card_number": document.querySelector("#card-number").value,
+            "card_exp_month": document.querySelector("#card-expiry-month").value,
+            "card_exp_year": document.querySelector("#card-expiry-year").value,
+            "card_cvv": document.querySelector("#card-cvv").value,
+          }
+        },
+        function(response){
+          if (response.status_code == "200") {
+            // Success to get card token_id, implement as you wish here:
+            document.querySelector("#token_id_result").value = response.token_id;
+            document.querySelector("#token_id").value = response.token_id;
+          } else {
+            // Fail to get card token_id
+          }
+        }
+      );
+      return e.preventDefault() && 0; // prevent form submit
+    }
+  </script>
+
+  <!-- JS implementation to handle 3DS authentication popup -->
+  <script type="text/javascript" id="js-authentication">
+    document.querySelector("#authentication-form").onsubmit = function(e){
+      redirect_url = document.querySelector("#redirect_url").value;
+      Veritrans.authenticate(
+        redirect_url,
+        function(response){
+          if (response.redirect_url){
+            // 3ds authentication redirect_url received, open iframe to display to customer
+            popupModal.openPopup(response.redirect_url);
+          } 
+          else if (response.status_code == "200"){
+            // 3ds authentication success, implement success scenario
+            popupModal.closePopup();
+            document.querySelector("#result").innerText = JSON.stringify(response,null,2);
+          } 
+          else {
+            // 3ds authentication failure, implement failure scenario
+            popupModal.closePopup();
+            document.querySelector("#result").innerText = JSON.stringify(response,null,2);
+          }
+        }
+      );
+      return e.preventDefault() && 0; // prevent form submit
+    }
+
+    /**
+     * helper functions to open Iframe popup, you may replace this with your own method to open iframe
+     * PicoModal library is used:
+     * <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/picomodal/3.0.0/picoModal.js"><\/script>
+     */
+    let popupModal = (function(){
+      let modal = null;
+      return {
+        openPopup(url){
+          modal = picoModal({
+            content:'<iframe frameborder="0" width="100%" height="100%" src="'+url+'"></iframe>',
+            width: "75%", 
+            closeButton: false, 
+            overlayClose: false,
+            escCloses: false
+          }).show();
+        },
+        closePopup(){
+          try{
+            modal.close();
+          } catch(e) {}
+        }
+      }
+    }());
+  </script>
+
+  <!-- Unrelated script, for demo purpose -->
+  <script type="text/javascript">
+    document.querySelector("#token-implementation").innerHTML = document.querySelector("#js-card-token")
+        .innerHTML
+        .replace(/</g, "&lt;")
+        .replace(/\\/g, "");
+    document.querySelector("#authentication-implementation").innerHTML = document.querySelector("#js-authentication")
+        .innerHTML
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\\/g, "");
+
+    document.querySelector("#charge-form").onsubmit = function(e){
+      fetch("/charge_core_api_ajax", {
+        method : "POST",
+        body: JSON.stringify({ 
+          "token_id" : document.querySelector("#token_id").value,
+          "authenticate_3ds" : document.querySelector('#authenticate_3ds').checked
+        }),
+        headers: {'Content-Type': 'application/json'},
+      })
+      .then(function(response) { return response.json(); })
+      .then(function(responseObj){
+        if(responseObj.redirect_url){
+          document.querySelector("#redirect_url").value = responseObj.redirect_url;
+          document.querySelector("#redirect_url_result").value = responseObj.redirect_url;
+        } else if (responseObj.status_code){
+          document.querySelector("#result").innerText = JSON.stringify(responseObj,null,2);
+          document.querySelector("#result").scrollIntoView();
+        }
+      })
+      return e.preventDefault() && 0; // prevent form submit
+    }
+
+  </script>
+</body>
+</html>
