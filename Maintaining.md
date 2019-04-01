@@ -16,3 +16,9 @@ mocha --grep "fail to create transaction with zero gross_amount"
 npm publish
 # You may be asked for login username and password for npmjs.com
 ```
+
+## Dev & Test via Docker Compose
+
+- To use docker-compose to test and run project, `cd` to repo dir
+- Run `docker-compose up`, which basically run pytest on container
+- Run `docker-compose down`, to clean up when done

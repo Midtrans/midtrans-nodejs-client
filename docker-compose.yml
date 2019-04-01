@@ -1,0 +1,11 @@
+version: '2'
+services:
+  dev:
+    build: .
+    # ports:
+    #   - "5000:5000" # ports not needed for dev
+    volumes:
+      - ./.:/usr/src/midtrans-nodejs-client
+    working_dir: /usr/src/midtrans-nodejs-client
+    entrypoint:
+      - ./docker-entrypoint.sh
