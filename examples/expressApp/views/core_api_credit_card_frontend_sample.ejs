@@ -12,7 +12,9 @@
 </head>
 
 <body>
-  <script type="text/javascript" src="https://api.sandbox.midtrans.com/v2/assets/js/midtrans.min.js"></script>
+  <!-- TODO change data-environment to `production` for Production mode -->
+  <!-- TODO change data-client-key to your production client key for Production mode -->
+  <script id= "midtrans-script" src="https://api.midtrans.com/v2/assets/js/midtrans-new-3ds.min.js" data-environment="sandbox" data-client-key="<%= clientKey %>" type="text/javascript"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/picomodal/3.0.0/picoModal.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.js"></script>
 
@@ -97,26 +99,24 @@
   <!-- JS implementation to get card token -->
   <script type="text/javascript" id="js-card-token">
     document.querySelector("#token-form").onsubmit = function(e){
-      // Set as sandbox URL, remove this line for Production mode.
-      Veritrans.url = "https://api.sandbox.midtrans.com/v2/token";
-      // TODO: Change with your client key.
-      Veritrans.client_key = "<%= clientKey %>";
-      Veritrans.token(
-        function(){
-          return {
-            "card_number": document.querySelector("#card-number").value,
-            "card_exp_month": document.querySelector("#card-expiry-month").value,
-            "card_exp_year": document.querySelector("#card-expiry-year").value,
-            "card_cvv": document.querySelector("#card-cvv").value,
-          }
-        },
-        function(response){
-          if (response.status_code == "200") {
+      var card = {
+        "card_number": document.querySelector("#card-number").value,
+        "card_exp_month": document.querySelector("#card-expiry-month").value,
+        "card_exp_year": document.querySelector("#card-expiry-year").value,
+        "card_cvv": document.querySelector("#card-cvv").value,
+      };
+      MidtransNew3ds.getCardToken(
+        card,
+        {
+          onSuccess: function(response){
             // Success to get card token_id, implement as you wish here:
             document.querySelector("#token_id_result").value = response.token_id;
             document.querySelector("#token_id").value = response.token_id;
-          } else {
+          },
+          onFailure: function(response){
             // Fail to get card token_id
+            alert(`Fail to get card token_id: ${JSON.stringify(response)}`);
+            console.log(`Fail to get card token_id: ${JSON.stringify(response)}`);
           }
         }
       );
@@ -127,28 +127,49 @@
   <!-- JS implementation to handle 3DS authentication popup -->
   <script type="text/javascript" id="js-authentication">
     document.querySelector("#authentication-form").onsubmit = function(e){
-      redirect_url = document.querySelector("#redirect_url").value;
-      Veritrans.authenticate(
+      var redirect_url = document.querySelector("#redirect_url").value;
+
+      // Utilize MidtransNew3Ds.authenticate function to perform 3DS authentication,
+      // and handle the success/failure result
+      MidtransNew3ds.authenticate(
         redirect_url,
-        function(response){
-          if (response.redirect_url){
-            // 3ds authentication redirect_url received, open iframe to display to customer
-            popupModal.openPopup(response.redirect_url);
-          } 
-          else if (response.status_code == "200"){
-            // 3ds authentication success, implement success scenario
+        {
+          performAuthentication: function(redirect_url){
+            // open iframe to display 3ds authentication redirect_url to customer
+            popupModal.openPopup(redirect_url);
+          },
+          onSuccess: function(response){
+            // 3ds authentication success, implement payment success scenario
             popupModal.closePopup();
             document.querySelector("#result").innerText = JSON.stringify(response,null,2);
-          } 
-          else {
-            // 3ds authentication failure, implement failure scenario
+          },
+          onFailure: function(response){
+            // 3ds authentication failure, implement payment failure scenario
             popupModal.closePopup();
             document.querySelector("#result").innerText = JSON.stringify(response,null,2);
+          },
+          onPending: function(response){
+            // transaction is pending, transaction result will be notified later via POST notification
+            popupModal.closePopup();
+            document.querySelector("#result").innerText = JSON.stringify(response,null,2)
           }
         }
       );
+
       return e.preventDefault() && 0; // prevent form submit
     }
+
+    /**
+     * Alternatively instead of opening 3ds authentication redirect_url using iframe,
+     * you can also redirect customer using: 
+      ```
+      MidtransNew3ds.redirect(redirect_url, {
+       callbackUrl : 'https://mywebsite.com/finish_3ds'
+      });
+      ```
+     * 
+     */
+    
 
     /**
      * helper functions to open Iframe popup, you may replace this with your own method to open iframe
@@ -206,6 +227,10 @@
           document.querySelector("#result").innerText = JSON.stringify(responseObj,null,2);
           document.querySelector("#result").scrollIntoView();
         }
+      })
+      .catch(function(err){
+        alert(`Fail to get charge response: ${JSON.stringify(err)}`);
+        console.log(`Fail to get charge response: ${JSON.stringify(err)}`);
       })
       return e.preventDefault() && 0; // prevent form submit
     }

@@ -6,7 +6,6 @@
 </head>
 
 <body>
-  <script type="text/javascript" src="https://api.sandbox.midtrans.com/v2/assets/js/midtrans.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/picomodal/3.0.0/picoModal.js"></script>
 
   <h1>Checkout</h1>
@@ -64,34 +63,32 @@
   <hr>
   <small>Check `app.js` file, section `Using Core API - Credit Card` for the backend implementation</small>
 
+  <!-- Import MidtransNew3ds library -->
+  <!-- TODO change data-environment to `production` for Production mode -->
+  <!-- TODO change data-client-key to your production client key for Production mode -->
+  <script id= "midtrans-script" src="https://api.midtrans.com/v2/assets/js/midtrans-new-3ds.min.js" data-environment="sandbox" data-client-key="<%= clientKey %>" type="text/javascript"></script>
+
   <!-- Javascript for token generation -->
   <script type="text/javascript">
-      // Set as sandbox URL, remove this line for Production mode.
-      Veritrans.url = "https://api.sandbox.midtrans.com/v2/token";
-      // TODO: Change with your client key.
-      Veritrans.client_key = "<%= clientKey %>";
-      var getCardData = function () {
-        return {
+      // On Submit button clicked
+      document.querySelector(".submit-button").onclick = function (event) {
+        console.log("SUBMIT button clicked");
+        // prepare cardData
+        var cardData = {
           "card_number": document.querySelector(".card-number").value,
           "card_exp_month": document.querySelector(".card-expiry-month").value,
           "card_exp_year": document.querySelector(".card-expiry-year").value,
           "card_cvv": document.querySelector(".card-cvv").value,
-        }
-      };
-
-      // On Submit button clicked
-      document.querySelector(".submit-button").onclick = function (event) {
-        console.log("SUBMIT button clicked");
+        };
         // [1] Use card data to get card token on the callback
-        Veritrans.token(getCardData, callbackCardToken);
+        MidtransNew3ds.getCardToken(cardData, getCardTokenCallback);
 
         event.preventDefault(); return false;
       };
 
-      function callbackCardToken(response) {
-        // Card Token callback triggered when `Veritrans.token` completed.
-        console.log("Get token response:",response);
-        if (response.status_code == "200") {
+      // getCardTokenCallback triggered when `MidtransNew3ds.getCardToken` completed.
+      var getCardTokenCallback = {
+        onSuccess: function(response){
           // success to get card token
           // [2] Send AJAX to let backend charge the card using the card token_id
           // Check backend implementation on `app.js` file, section `[2]`
@@ -108,31 +105,35 @@
             console.log("Charge response:",responseObj);
             if (responseObj.status_code == "201"){
               // [3.1] Transaction need 3DS authentication
-              Veritrans.authenticate(responseObj.redirect_url, callback3dsAuthentication);
+              MidtransNew3ds.authenticate(responseObj.redirect_url, callback3dsAuthentication);
             } else {
               // Transaction do not need 3DS Authentication, transaction is complete with result
               transactionComplete(responseObj);
             }
           })
-        }
-        else {
+        },
+        onFailure: function(response){
           // fail to get card token
           transactionComplete(response);
         }
       }
 
-      function callback3dsAuthentication(response){
-        console.log('callback3dsAuthentication triggered with param:',response);
-        if (response.redirect_url){
+      var callback3dsAuthentication = {
+        performAuthentication: function(redirect_url){
           // [3.2] 3ds authentication redirect_url received, open iframe to display to customer
-          popupModal.openPopup(response.redirect_url);
-        } 
-        else if (response.status_code){
-          // [3.3] 3DS authentication result received, which is also transaction result
+          popupModal.openPopup(redirect_url);
+        },
+        // [3.3] When 3DS authentication result received, which contains transaction result
+        // it will trigger one of function below, according to status: success/failure/pending
+        onSuccess: function(response){
           transactionComplete(response);
-        } 
-        else {
-          // handle exceptional case
+        },
+        onFailure: function(response){
+          transactionComplete(response);
+        },
+        onPending: function(response){
+          transactionComplete(response);
+
         }
       }
 
