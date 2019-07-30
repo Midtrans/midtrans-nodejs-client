@@ -78,6 +78,9 @@ app.post('/charge_core_api_ajax', function (req, res) {
   .then((apiResponse)=>{
     res.send(`${JSON.stringify(apiResponse, null, 2)}`)
   })
+  .catch((err)=>{
+    res.send(`${JSON.stringify(err.ApiResponse, null, 2)}`)
+  })
 })
 
 

@@ -8,6 +8,9 @@
     pre{
       font-size:75%;
     }
+    code[class*="language-"], pre[class*="language-"]{
+      white-space:pre-wrap;
+    }
   </style>
 </head>
 
@@ -46,6 +49,7 @@
 
       <p>
         <label>JS implementation:</label>
+        <pre><code class="language-html" id="token-implementation-lib"></code></pre>
         <pre><code class="language-javascript" id="token-implementation"></code></pre>
       </p>
     </fieldset>
@@ -71,6 +75,24 @@
       </p>
 
       <small>Check `app.js` file, section `/charge_core_api_ajax` for the backend implementation</small>
+      <pre><code class="language-javascript">// sample charge in CURL
+curl -X POST \
+  https://api.sandbox.midtrans.com/v2/charge \
+  -H 'Accept: application/json' \
+  -H 'Authorization: Basic < From your server_key >' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "payment_type": "credit_card",
+  "transaction_details": {
+    "order_id": "order102-2-1562650595",
+    "gross_amount": 100000
+  },
+  "credit_card": {
+    "token_id": "< Token ID from Get Token Step >",
+    "authentication": true
+  }
+}'
+      </code></pre>
     </fieldset>
   </form>
 
@@ -176,8 +198,8 @@
      * PicoModal library is used:
      * <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/picomodal/3.0.0/picoModal.js"><\/script>
      */
-    let popupModal = (function(){
-      let modal = null;
+    var popupModal = (function(){
+      var modal = null;
       return {
         openPopup(url){
           modal = picoModal({
@@ -199,9 +221,15 @@
 
   <!-- Unrelated script, for demo purpose -->
   <script type="text/javascript">
+    document.querySelector("#token-implementation-lib").innerHTML = '&lt;!-- Include Midtrans JS library --&gt; \n'+ document.querySelector("#midtrans-script")
+        .outerHTML
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\\/g, "");
     document.querySelector("#token-implementation").innerHTML = document.querySelector("#js-card-token")
         .innerHTML
         .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
         .replace(/\\/g, "");
     document.querySelector("#authentication-implementation").innerHTML = document.querySelector("#js-authentication")
         .innerHTML
@@ -210,6 +238,7 @@
         .replace(/\\/g, "");
 
     document.querySelector("#charge-form").onsubmit = function(e){
+      popupModal.openPopup('data:text/html,requesting...');
       fetch("/charge_core_api_ajax", {
         method : "POST",
         body: JSON.stringify({ 
@@ -225,12 +254,16 @@
           document.querySelector("#redirect_url_result").value = responseObj.redirect_url;
         } else if (responseObj.status_code){
           document.querySelector("#result").innerText = JSON.stringify(responseObj,null,2);
+          popupModal.closePopup();
           document.querySelector("#result").scrollIntoView();
         }
       })
       .catch(function(err){
         alert(`Fail to get charge response: ${JSON.stringify(err)}`);
         console.log(`Fail to get charge response: ${JSON.stringify(err)}`);
+      })
+      .finally(function(){
+        popupModal.closePopup();
       })
       return e.preventDefault() && 0; // prevent form submit
     }

@@ -9,9 +9,9 @@
   "dependencies": {
     "ejs": "~2.5.7",
     "express": "~4.16.0",
-    "midtrans-client": "^1.0.0"
+    "midtrans-client": "^1.0.3"
   },
   "devDependencies": {
-    "nodemon": "^1.18.10"
+    "nodemon": "^1.19.1"
   }
 }
