@@ -103,12 +103,19 @@ app.post('/check_transaction_status', function(req, res){
           } else if (fraudStatus == 'accept'){
               // TODO set transaction status on your databaase to 'success'
           }
+      } else if (transactionStatus == 'settlement'){
+        // TODO set transaction status on your databaase to 'success'
+        // Note: Non card transaction will become 'settlement' on payment success
+        // Credit card will also become 'settlement' D+1, which you can ignore
+        // because most of the time 'capture' is enough to be considered as success
       } else if (transactionStatus == 'cancel' ||
         transactionStatus == 'deny' ||
         transactionStatus == 'expire'){
         // TODO set transaction status on your databaase to 'failure'
       } else if (transactionStatus == 'pending'){
         // TODO set transaction status on your databaase to 'pending' / waiting payment
+      } else if (transactionStatus == 'refund'){
+        // TODO set transaction status on your databaase to 'refund'
       }
       console.log(summary);
       res.send(JSON.stringify(transactionStatusObject, null, 2));
@@ -139,12 +146,19 @@ app.post('/notification_handler', function(req, res){
           } else if (fraudStatus == 'accept'){
               // TODO set transaction status on your databaase to 'success'
           }
+      } else if (transactionStatus == 'settlement'){
+        // TODO set transaction status on your databaase to 'success'
+        // Note: Non-card transaction will become 'settlement' on payment success
+        // Card transaction will also become 'settlement' D+1, which you can ignore
+        // because most of the time 'capture' is enough to be considered as success
       } else if (transactionStatus == 'cancel' ||
         transactionStatus == 'deny' ||
         transactionStatus == 'expire'){
         // TODO set transaction status on your databaase to 'failure'
       } else if (transactionStatus == 'pending'){
         // TODO set transaction status on your databaase to 'pending' / waiting payment
+      } else if (transactionStatus == 'refund'){
+        // TODO set transaction status on your databaase to 'refund'
       }
       console.log(summary);
       res.send(summary);
