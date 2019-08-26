@@ -8,8 +8,10 @@
     pre{
       font-size:75%;
     }
-    code[class*="language-"], pre[class*="language-"]{
-      white-space:pre-wrap;
+    /* Fix for fieldset width overflowing parent width */
+    fieldset {
+      min-width: 0;
+      max-width: 100%;
     }
   </style>
 </head>
