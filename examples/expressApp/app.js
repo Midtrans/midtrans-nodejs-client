@@ -63,7 +63,6 @@ app.get('/simple_core_api_checkout', function (req, res) {
 // [2] Handle Core API credit card token_id charge
 app.post('/charge_core_api_ajax', function (req, res) {
   console.log(`- Received charge request:`,req.body);
-  console.log(req.body.authenticate_3ds);
   core.charge({
     "payment_type": "credit_card",
     "transaction_details": {
