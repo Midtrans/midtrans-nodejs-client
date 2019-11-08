@@ -3,7 +3,7 @@
 ## Updating Package
 
 - Make your changes
-- Update version on `package.json` file
+- Update version on `package.json` file (and `user-agent` header version on `httpClient.js` file)
 - To install dev dependencies `npm install --dev` on repo folder
 - To run test, run `npm test` or `mocha`
 - To run specific test
