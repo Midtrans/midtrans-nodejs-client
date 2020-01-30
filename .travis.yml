@@ -2,9 +2,11 @@ language: node_js
 node_js:
   - "node"
   - "lts/*"
-  - "9"
+  # - "14" # Node v14 not yet available on travis apparently
+  - "12"
+  - "10"
   - "8"
-  - "7"
+  # - "7" # Node v7 is no longer officially supported by NodeJS
 install:
   - npm install --dev
 script:

@@ -8,9 +8,9 @@ const cons = require('./sharedConstants');
 let tokenId = '';
 let savedTokenId = '';
 let reuseOrderId = [
-  "node-midtransclient-test1-"+Math.round((new Date()).getTime() / 1000),
-  "node-midtransclient-test2-"+Math.round((new Date()).getTime() / 1000),
-  "node-midtransclient-test3-"+Math.round((new Date()).getTime() / 1000),
+  "node-midtransclient-test1-"+generateTimestamp(),
+  "node-midtransclient-test2-"+generateTimestamp(),
+  "node-midtransclient-test3-"+generateTimestamp(),
 ];
 let apiResponse = {};
 
@@ -196,6 +196,18 @@ describe('CoreApi.js',()=> {
       })
   })
 
+  it('fail to direct refund non settlement transaction',()=>{
+    let core = new CoreApi(generateConfig());
+    let parameter = {
+      "amount": 5000,
+      "reason": "for some reason"
+    }
+    return core.transaction.refundDirect(reuseOrderId[2],parameter)
+      .catch((e)=>{
+        expect(e.message).to.includes('412');
+      })
+  })
+
   it('fail to status 404 non exists transaction',()=>{
     let core = new CoreApi(generateConfig());
     return core.transaction.status('non-exists-transaction')
@@ -275,6 +287,10 @@ describe('CoreApi.js',()=> {
  * Helper functions
  */
 
+function generateTimestamp(devider=1){
+  return Math.round((new Date()).getTime() / devider);
+}
+
 function generateConfig(){
   return {
     isProduction: false,
@@ -288,7 +304,7 @@ function generateParamMin(orderId=null){
       "payment_type": "bank_transfer",
       "transaction_details": {
           "gross_amount": 44145,
-          "order_id": orderId == null ? "node-midtransclient-test-"+Math.round((new Date()).getTime() / 1000) : orderId,
+          "order_id": orderId == null ? "node-midtransclient-test-"+generateTimestamp() : orderId,
       },
       "bank_transfer":{
           "bank": "bca"
@@ -301,7 +317,7 @@ function generateCCParamMin(orderId=null,tokenId=null){
       "payment_type": "credit_card",
       "transaction_details": {
           "gross_amount": 12145,
-          "order_id": orderId == null ? "node-midtransclient-test-"+Math.round((new Date()).getTime() / 1000) : orderId,
+          "order_id": orderId == null ? "node-midtransclient-test-"+generateTimestamp() : orderId,
       },
       "credit_card":{
           "token_id": tokenId
@@ -312,7 +328,7 @@ function generateCCParamMin(orderId=null,tokenId=null){
 function generateParamMax(){
   return {
     "transaction_details": {
-      "order_id": "node-midtransclient-test-"+Math.round((new Date()).getTime() / 1000),
+      "order_id": "node-midtransclient-test-"+generateTimestamp(),
       "gross_amount": 10000
     },
     "item_details": [{

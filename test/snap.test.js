@@ -170,6 +170,10 @@ describe('Snap.js',()=> {
 
 })
 
+function generateTimestamp(devider=1){
+  return Math.round((new Date()).getTime() / devider);
+}
+
 function generateConfig(){
   return {
     isProduction: false,
@@ -181,7 +185,7 @@ function generateConfig(){
 function generateParamMin(){
   return {
     "transaction_details": {
-      "order_id": "node-midtransclient-test-"+Math.round((new Date()).getTime() / 1000),
+      "order_id": "node-midtransclient-test-"+generateTimestamp(),
       "gross_amount": 200000
     }, "credit_card":{
       "secure" : true
@@ -192,7 +196,7 @@ function generateParamMin(){
 function generateParamMax(){
   return {
     "transaction_details": {
-      "order_id": "node-midtransclient-test-"+Math.round((new Date()).getTime() / 1000),
+      "order_id": "node-midtransclient-test-"+generateTimestamp(),
       "gross_amount": 10000
     },
     "item_details": [{
