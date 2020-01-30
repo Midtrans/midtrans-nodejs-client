@@ -7,7 +7,7 @@ const cons = require('./sharedConstants');
 function generateParamMin(){
   return {
     "transaction_details": {
-      "order_id": "node-midtransclient-test-"+Math.round((new Date()).getTime() / 1000),
+      "order_id": "node-midtransclient-test-"+Math.round((new Date()).getTime() / 1),
       "gross_amount": 200000
     }, "credit_card":{
       "secure" : true
