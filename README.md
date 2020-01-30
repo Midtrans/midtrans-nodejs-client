@@ -408,10 +408,23 @@ apiClient.transaction.expire('YOUR_ORDER_ID OR TRANSACTION_ID')
 #### Refund Transaction
 ```javascript
 let parameter = {
+    "refund_key": "order1-ref1",
     "amount": 5000,
     "reason": "Item out of stock"
 }
 apiClient.transaction.refund('YOUR_ORDER_ID OR TRANSACTION_ID',parameter)
+    .then((response)=>{
+        // do something to `response` object
+    });
+```
+#### Refund Transaction with Direct Refund
+```javascript
+let parameter = {
+    "refund_key": "order1-ref1",
+    "amount": 5000,
+    "reason": "Item out of stock"
+}
+apiClient.transaction.refundDirect('YOUR_ORDER_ID OR TRANSACTION_ID',parameter)
     .then((response)=>{
         // do something to `response` object
     });

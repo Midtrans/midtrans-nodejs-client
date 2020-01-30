@@ -196,6 +196,18 @@ describe('CoreApi.js',()=> {
       })
   })
 
+  it('fail to direct refund non settlement transaction',()=>{
+    let core = new CoreApi(generateConfig());
+    let parameter = {
+      "amount": 5000,
+      "reason": "for some reason"
+    }
+    return core.transaction.refundDirect(reuseOrderId[2],parameter)
+      .catch((e)=>{
+        expect(e.message).to.includes('412');
+      })
+  })
+
   it('fail to status 404 non exists transaction',()=>{
     let core = new CoreApi(generateConfig());
     return core.transaction.status('non-exists-transaction')
