@@ -4,7 +4,7 @@ node_js:
   - "lts/*"
   - "9"
   - "8"
-  - "7"
+  # - "7" # Node v7 is no longer officially supported by NodeJS
 install:
   - npm install --dev
 script:
