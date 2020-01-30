@@ -2,7 +2,9 @@ language: node_js
 node_js:
   - "node"
   - "lts/*"
-  - "9"
+  - "14"
+  - "12"
+  - "10"
   - "8"
   # - "7" # Node v7 is no longer officially supported by NodeJS
 install:
