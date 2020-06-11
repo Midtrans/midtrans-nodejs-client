@@ -452,6 +452,8 @@ There are:
 - [Snap examples](/examples/snapApi)
 - [Express App examples](/examples/expressApp) that implement Snap & Core Api
 
+<!-- @TODO: document ## 5. IRIS -->
+
 ## Get help
 
 * [Midtrans Docs](https://docs.midtrans.com)
@@ -459,3 +461,6 @@ There are:
 * [SNAP documentation](http://snap-docs.midtrans.com)
 * [Core API documentation](http://api-docs.midtrans.com)
 * Can't find answer you looking for? email to [support@midtrans.com](mailto:support@midtrans.com)
+
+## TODO
+- fix notif handling examples to also handle non card settlement transactions
