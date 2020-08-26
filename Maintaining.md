@@ -25,3 +25,20 @@ npm publish
 - To use docker-compose to test and run project, `cd` to repo dir
 - Run `docker-compose up`, which basically run pytest on container
 - Run `docker-compose down`, to clean up when done
+
+<details>
+<summary>Development Notes - (click to expand)</summary>
+<article>
+
+## TODO
+- fix notif handling examples to also handle non card settlement transactions
+    - also add specific handler for card deny to not trigger any db changes
+- allow header override
+- allow config x-override notification url header
+- probably properly expose axios instance as public
+- allow http client config such as timeout timer
+- check & fix http client timeout config less than 10sec for test `able to throw connection failure exception`
+- implement gopay checkout api
+- implement cc subscription api
+</article>
+</details>
