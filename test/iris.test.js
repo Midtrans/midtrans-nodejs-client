@@ -5,6 +5,7 @@ const expect = require('chai').expect;
 const midtransClient = require('./../index.js');
 const Iris = midtransClient.Iris;
 const cons = require('./sharedConstants');
+let globVar = {};
 
 describe('Iris.js',()=> {
 
@@ -77,7 +78,7 @@ describe('Iris.js',()=> {
     let iris = new Iris(generateConfig());
     return iris.createBeneficiaries({
       "name": "Budi Susantoo",
-      "account": "123321124",
+      "account": "0611101146",
       "bank": "bca",
       "alias_name": "budisusantoo",
       "email": "budi.susantoo@example.com"
@@ -89,7 +90,81 @@ describe('Iris.js',()=> {
         expect(e.httpStatusCode).to.equals(400);
         expect(e.message).to.includes('400');
         expect(e.message).to.includes('error occurred when creating beneficiary');
-        expect(e.ApiResponse.errors).to.includes('Account has already been taken');
+        expect(e.ApiResponse.errors[0]).to.includes('already been taken');
+      })
+  })
+
+  it('able to updateBeneficiaries with existing/created account',()=>{
+    let iris = new Iris(generateConfig());
+    return iris.updateBeneficiaries('budisusantoo',{
+      "name": "Budi Susantoo",
+      "account": "0611101141",
+      "bank": "bca",
+      "alias_name": "budisusantoo",
+      "email": "budi.susantoo@example.com"
+    })
+      .then((res)=>{
+        expect(res).to.have.property('status');
+        expect(res.status).to.includes('updated');
+      })
+  })
+
+  it('able to getBeneficiaries',()=>{
+    let iris = new Iris(generateConfig());
+    return iris.getBeneficiaries()
+      .then((res)=>{
+        expect(res).to.be.an('array');
+        expect(res[0]).to.have.property('alias_name');
+        expect(res[0]).to.have.property('account');
+      })
+  })
+
+  it('able to createPayouts',()=>{
+    let iris = new Iris(generateConfig());
+    return iris.createPayouts({
+      "payouts": [
+        {
+          "beneficiary_name": "Budi Susantoo",
+          "beneficiary_account": "0611101146",
+          "beneficiary_bank": "bca",
+          "beneficiary_email": "budi.susantoo@example.com",
+          "amount": "10233",
+          "notes": "unit test node js"
+        },
+      ]
+    })
+      .then((res)=>{
+        expect(res).to.have.property('payouts');
+        expect(res.payouts).to.be.an('array');
+        expect(res.payouts[0]).to.have.property('reference_no');
+        expect(res.payouts[0].reference_no).to.be.a('string');
+        globVar.createdRefNo = res.payouts[0].reference_no;
+      })
+  })
+
+  it('fail to approvePayouts: role not authorized',()=>{
+    let iris = new Iris(generateConfig());
+    return iris.approvePayouts({
+      "reference_nos": ['123123123'],
+      "otp": "335163"
+    })
+      .then((res)=>{
+      })
+      .catch((e)=>{
+        expect(e.message).to.includes(401);
+        expect(e.message).to.includes('not authorized');
+      })
+  })
+
+  it('fail to rejectPayouts: role not authorized',()=>{
+    let iris = new Iris(generateConfig());
+    return iris.rejectPayouts({
+      "reference_nos": [globVar.createdRefNo],
+      "reject_reason": "Reason to reject payouts"
+    })
+      .then((res)=>{
+        expect(res).to.have.property('status');
+        expect(res.status).to.be.a('string');
       })
   })
 
