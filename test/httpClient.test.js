@@ -73,5 +73,14 @@ describe('httpClient.js',()=> {
       expect(e.message).to.includes('fail to parse');
     })
   })
+  
+  it('able to throw connection failure exception',()=>{
+    let httpClient = new HttpClient();
+    return httpClient.request('post',cons.serverKey,'https://non-exist-unreachable-domain-name.com'+'/transactions',generateParamMin())
+    .then((res)=>{})
+    .catch((e)=>{
+      expect(e.message).to.includes('connection failure');
+    })
+  })
 
 })
