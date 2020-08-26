@@ -23,13 +23,13 @@ describe('Iris.js',()=> {
     expect(typeof(iris.approvePayouts)).to.be.equal('function');
     expect(typeof(iris.rejectPayouts)).to.be.equal('function');
     expect(typeof(iris.getPayoutDetails)).to.be.equal('function');
-    expect(typeof(iris.getTransactionStatements)).to.be.equal('function');
+    expect(typeof(iris.getTransactionHistory)).to.be.equal('function');
     expect(typeof(iris.getTopupChannels)).to.be.equal('function');
     expect(typeof(iris.getBalance)).to.be.equal('function');
-    expect(typeof(iris.getBankAccounts)).to.be.equal('function');
-    expect(typeof(iris.getBankAccountBalance)).to.be.equal('function');
+    expect(typeof(iris.getFacilitatorBankAccounts)).to.be.equal('function');
+    expect(typeof(iris.getFacilitatorBalance)).to.be.equal('function');
     expect(typeof(iris.getBeneficiaryBanks)).to.be.equal('function');
-    expect(typeof(iris.getBankAccountBalance)).to.be.equal('function');
+    expect(typeof(iris.validateBankAccount)).to.be.equal('function');
     expect(iris.apiConfig.get().serverKey).to.be.a('string');
   })
 
@@ -51,13 +51,45 @@ describe('Iris.js',()=> {
     expect(iris.apiConfig.get().isProduction).to.be.false;
   })
 
-  it('able to ping',()=>{
+  it('able to ping with correct api key',()=>{
     let iris = new Iris(generateConfig());
-    iris.ping()
+    return iris.ping()
       .then((res)=>{
-        console.log('theres:',res);
         expect(res).to.be.a('string');
         expect(res).to.be.equals('pong');
+      })
+  })
+
+  it('fail 401 to createBeneficiaries with unset api key',()=>{
+    let iris = new Iris();
+    return iris.createBeneficiaries({})
+      .then((res)=>{
+        expect(res).to.equals(null);
+      })
+      .catch((e)=>{
+        // console.log(e);
+        expect(e.httpStatusCode).to.equals(401);
+        expect(e.message).to.includes('denied');
+      })
+  })
+
+  it('fail to createBeneficiaries: account duplicated / already been taken',()=>{
+    let iris = new Iris(generateConfig());
+    return iris.createBeneficiaries({
+      "name": "Budi Susantoo",
+      "account": "123321124",
+      "bank": "bca",
+      "alias_name": "budisusantoo",
+      "email": "budi.susantoo@example.com"
+    })
+      .then((res)=>{
+        expect(res).to.equals(null);
+      })
+      .catch((e)=>{
+        expect(e.httpStatusCode).to.equals(400);
+        expect(e.message).to.includes('400');
+        expect(e.message).to.includes('error occurred when creating beneficiary');
+        expect(e.ApiResponse.errors).to.includes('Account has already been taken');
       })
   })
 
@@ -78,6 +110,8 @@ function generateConfig(){
   }
 }
 
+// TODO: replace these dummy funcs below
+
 function generateParamMin(orderId=null){
   return {
       "payment_type": "bank_transfer",
@@ -88,117 +122,5 @@ function generateParamMin(orderId=null){
       "bank_transfer":{
           "bank": "bca"
       }
-  }
-}
-
-function generateCCParamMin(orderId=null,tokenId=null){
-  return {
-      "payment_type": "credit_card",
-      "transaction_details": {
-          "gross_amount": 12145,
-          "order_id": orderId == null ? "node-midtransclient-test-"+generateTimestamp() : orderId,
-      },
-      "credit_card":{
-          "token_id": tokenId
-      }
-  }
-}
-
-function generateParamMax(){
-  return {
-    "transaction_details": {
-      "order_id": "node-midtransclient-test-"+generateTimestamp(),
-      "gross_amount": 10000
-    },
-    "item_details": [{
-      "id": "ITEM1",
-      "price": 10000,
-      "quantity": 1,
-      "name": "Midtrans Bear",
-      "brand": "Midtrans",
-      "category": "Toys",
-      "merchant_name": "Midtrans"
-    }],
-    "customer_details": {
-      "first_name": "John",
-      "last_name": "Watson",
-      "email": "test@example.com",
-      "phone": "+628123456",
-      "billing_address": {
-        "first_name": "John",
-        "last_name": "Watson",
-        "email": "test@example.com",
-        "phone": "081 2233 44-55",
-        "address": "Sudirman",
-        "city": "Jakarta",
-        "postal_code": "12190",
-        "country_code": "IDN"
-      },
-      "shipping_address": {
-        "first_name": "John",
-        "last_name": "Watson",
-        "email": "test@example.com",
-        "phone": "0 8128-75 7-9338",
-        "address": "Sudirman",
-        "city": "Jakarta",
-        "postal_code": "12190",
-        "country_code": "IDN"
-      }
-    },
-    "enabled_payments": ["credit_card", "mandiri_clickpay", "cimb_clicks","bca_klikbca", "bca_klikpay", "bri_epay", "echannel", "indosat_dompetku","mandiri_ecash", "permata_va", "bca_va", "bni_va", "other_va", "gopay","kioson", "indomaret", "gci", "danamon_online"],
-    "credit_card": {
-      "secure": true,
-      "channel": "migs",
-      "bank": "bca",
-      "installment": {
-        "required": false,
-        "terms": {
-          "bni": [3, 6, 12],
-          "mandiri": [3, 6, 12],
-          "cimb": [3],
-          "bca": [3, 6, 12],
-          "offline": [6, 12]
-        }
-      },
-      "whitelist_bins": [
-        "48111111",
-        "41111111"
-      ]
-    },
-    "bca_va": {
-      "va_number": "12345678911",
-      "free_text": {
-        "inquiry": [
-          {
-            "en": "text in English",
-            "id": "text in Bahasa Indonesia"
-          }
-        ],
-        "payment": [
-          {
-            "en": "text in English",
-            "id": "text in Bahasa Indonesia"
-          }
-        ]
-      }
-    },
-    "bni_va": {
-      "va_number": "12345678"
-    },
-    "permata_va": {
-      "va_number": "1234567890",
-      "recipient_name": "SUDARSONO"
-    },
-    "callbacks": {
-      "finish": "https://demo.midtrans.com"
-    },
-    "expiry": {
-      "start_time": ((new Date).getFullYear()+1)+"-12-20 18:11:08 +0700",
-      "unit": "minutes",
-      "duration": 1
-    },
-    "custom_field1": "custom field 1 content",
-    "custom_field2": "custom field 2 content",
-    "custom_field3": "custom field 3 content"
   }
 }
