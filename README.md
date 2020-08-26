@@ -445,7 +445,62 @@ snap.createTransaction(parameter)
       })
 ```
 
-## 4. Examples
+## 4. Advanced Usage
+### Custom Http Client Config
+Under the hood this API wrapper is using [Axios](https://github.com/axios/axios) as http client. You can override the default config. 
+
+You can set via the value of this `<api-client-instance>.httpClient.http_client.defaults` object, like [described in Axios guide](https://github.com/axios/axios#global-axios-defaults). e.g:
+```javascript
+// create instance of api client
+let snap = new midtransClient.Snap({
+        isProduction : false,
+        serverKey : 'YOUR_SERVER_KEY',
+        clientKey : 'YOUR_CLIENT_KEY'
+    });
+
+// set Axios timeout config to 2500
+snap.httpClient.http_client.defaults.timeout = 2500; 
+
+// set custom HTTP header for every request from this instance
+snap.httpClient.http_client.headers.common['My-Header'] = 'my-custom-value';
+```
+### Custom Http Client Interceptor
+As Axios [also support interceptor](https://github.com/axios/axios#interceptors), you can also apply it here. e.g:
+```javascript
+// Add a request interceptor
+snap.httpClient.http_client.interceptors.request.use(function (config) {
+    // Do something before request is sent
+    return config;
+  }, function (error) {
+    // Do something with request error
+    return Promise.reject(error);
+  });
+```
+
+It can be used for example to customize/manipulate http request's body, header, etc. before it got sent to the destination API url.
+
+### Override Http Notification Url
+As [described in API docs](https://snap-docs.midtrans.com/#override-notification-url), merchant can opt to change or add custom notification urls on every transaction. It can be achieved by adding additional HTTP headers into charge request.
+
+This can be achived by:
+```javascript
+// create instance of api client
+let snap = new midtransClient.Snap({
+        isProduction : false,
+        serverKey : 'YOUR_SERVER_KEY',
+        clientKey : 'YOUR_CLIENT_KEY'
+});
+
+// set custom HTTP header that will be used by Midtrans API to override notification url:
+snap.httpClient.http_client.headers.common['X-Override-Notification'] = 'https://mysite/midtrans-notification-handler';
+```
+
+or append notification:
+```javascript
+snap.httpClient.http_client.headers.common['X-Append-Notification'] = 'https://mysite/midtrans-notification-handler';
+```
+
+## 5. Examples
 Examples are available on [/examples](/examples) folder.
 There are:
 - [Core Api examples](/examples/coreApi)
