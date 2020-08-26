@@ -8,7 +8,10 @@
 - To run test, run `npm test` or `mocha`
 - To run specific test
 ```
+# specific single test
 mocha --grep "fail to create transaction with zero gross_amount"
+# or everything inside single `describe`
+mocha --grep "Iris.js"
 ```
 - To install the package locally `npm install /path/to/repo/folder`
 - To update https://npmjs.com repo, run these on terminal:
