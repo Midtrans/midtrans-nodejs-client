@@ -31,8 +31,6 @@ npm publish
 <article>
 
 ## TODO
-- fix notif handling examples to also handle non card settlement transactions
-    - also add specific handler for card deny to not trigger any db changes
 - allow header override
 - allow config x-override notification url header
 - probably properly expose axios instance as public

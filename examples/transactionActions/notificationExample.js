@@ -33,16 +33,21 @@ apiClient.transaction.notification(mockNotificationJson)
         // Sample transactionStatus handling logic
 
         if (transactionStatus == 'capture'){
+            // capture only applies to card transaction, which you need to check for the fraudStatus
             if (fraudStatus == 'challenge'){
                 // TODO set transaction status on your databaase to 'challenge'
             } else if (fraudStatus == 'accept'){
                 // TODO set transaction status on your databaase to 'success'
             }
+        } else if (transactionStatus == 'settlement'){
+            // TODO set transaction status on your databaase to 'success'
+        } else if (transactionStatus == 'deny'){
+            // TODO you can ignore 'deny', because most of the time it allows payment retries
+            // and later can become success
         } else if (transactionStatus == 'cancel' ||
-          transactionStatus == 'deny' ||
           transactionStatus == 'expire'){
-          // TODO set transaction status on your databaase to 'failure'
+            // TODO set transaction status on your databaase to 'failure'
         } else if (transactionStatus == 'pending'){
-          // TODO set transaction status on your databaase to 'pending' / waiting payment
+            // TODO set transaction status on your databaase to 'pending' / waiting payment
         }
     });
