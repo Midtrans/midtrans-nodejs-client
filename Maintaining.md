@@ -40,5 +40,6 @@ npm publish
 - check & fix http client timeout config less than 10sec for test `able to throw connection failure exception`
 - implement gopay checkout api
 - implement cc subscription api
+- write & create example app example for Iris
 </article>
 </details>

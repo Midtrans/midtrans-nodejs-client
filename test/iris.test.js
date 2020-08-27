@@ -156,7 +156,7 @@ describe('Iris.js',()=> {
       })
   })
 
-  it('fail to rejectPayouts: role not authorized',()=>{
+  it('able to rejectPayouts that has been created above',()=>{
     let iris = new Iris(generateConfig());
     return iris.rejectPayouts({
       "reference_nos": [globVar.createdRefNo],
@@ -165,6 +165,85 @@ describe('Iris.js',()=> {
       .then((res)=>{
         expect(res).to.have.property('status');
         expect(res.status).to.be.a('string');
+      })
+  })
+
+  it('able to getPayoutDetails that has been rejected above',()=>{
+    let iris = new Iris(generateConfig());
+    return iris.getPayoutDetails(globVar.createdRefNo)
+      .then((res)=>{
+        // console.log(res);
+        expect(res).to.have.property('status');
+        expect(res.status).to.be.a('string');
+        expect(res.status).to.equals('rejected');
+      })
+  })
+
+  it('able to getTransactionHistory',()=>{
+    let iris = new Iris(generateConfig());
+    return iris.getTransactionHistory()
+      .then((res)=>{
+        expect(res).to.be.an('array');
+        expect(res[0].status).to.be.a('string');
+        expect(res[0].reference_no).to.be.a('string');
+        expect(res[0].beneficiary_account).to.be.a('string');
+      })
+  })
+
+  it('able to getTopupChannels',()=>{
+    let iris = new Iris(generateConfig());
+    return iris.getTopupChannels()
+      .then((res)=>{
+        expect(res).to.be.an('array');
+        expect(res[0].id).to.be.a('number');
+        expect(res[0].virtual_account_type).to.be.a('string');
+        expect(res[0].virtual_account_number).to.be.a('string');
+      })
+  })
+
+  it('able to getBalance',()=>{
+    let iris = new Iris(generateConfig());
+    return iris.getBalance()
+      .then((res)=>{
+        expect(res.balance).to.be.a('string');
+      })
+  })
+
+  it('fail to getFacilitatorBankAccounts: not authorized due to non facilitator account',()=>{
+    let iris = new Iris(generateConfig());
+    return iris.getFacilitatorBalance()
+      .catch((e)=>{
+        expect(e.message).to.includes('not authorized');
+      })
+  })
+
+  it('fail to getFacilitatorBalance: not authorized due to non facilitator account',()=>{
+    let iris = new Iris(generateConfig());
+    return iris.getFacilitatorBalance()
+      .catch((e)=>{
+        expect(e.message).to.includes('not authorized');
+      })
+  })
+
+  it('able to getBeneficiaryBanks',()=>{
+    let iris = new Iris(generateConfig());
+    return iris.getBeneficiaryBanks()
+      .then((res)=>{
+        expect(res.beneficiary_banks).to.be.an('array');
+        expect(res.beneficiary_banks[0].code).to.be.a('string');
+        expect(res.beneficiary_banks[0].name).to.be.a('string');
+      })
+  })
+
+  it('able to validateBankAccount',()=>{
+    let iris = new Iris(generateConfig());
+    return iris.validateBankAccount({
+      bank:"danamon",
+      account:"000001137298"
+    })
+      .then((res)=>{
+        expect(res.account_no).to.be.a('string');
+        expect(res.account_name).to.be.a('string');
       })
   })
 
@@ -182,20 +261,5 @@ function generateConfig(){
   return {
     isProduction: false,
     serverKey: cons.irisApiKey
-  }
-}
-
-// TODO: replace these dummy funcs below
-
-function generateParamMin(orderId=null){
-  return {
-      "payment_type": "bank_transfer",
-      "transaction_details": {
-          "gross_amount": 44145,
-          "order_id": orderId == null ? "node-midtransclient-test-"+generateTimestamp() : orderId,
-      },
-      "bank_transfer":{
-          "bank": "bca"
-      }
   }
 }
