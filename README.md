@@ -500,7 +500,142 @@ or append notification:
 snap.httpClient.http_client.headers.common['X-Append-Notification'] = 'https://mysite/midtrans-notification-handler';
 ```
 
-## 5. Examples
+## 5. Iris Disbursement API
+
+[Iris](https://iris-docs.midtrans.com) is Midtrans’ cash management solution that allows you to disburse payments to any bank accounts in Indonesia securely and easily. Iris connects to the banks’ hosts to enable seamless transfer using integrated APIs.
+
+For more details please visit: https://iris-docs.midtrans.com
+
+### 5.1 Client Initialization
+
+Get your API key from [Midtrans Iris Dashboard](https://app.midtrans.com/iris)
+
+Create API client object. Note: the serverKey means your API key.
+
+```javascript
+const midtransClient = require('midtrans-client');
+// Create Core API instance
+let iris = new midtransClient.Iris({
+        isProduction : false,
+        serverKey : 'YOUR_API_KEY'
+    });
+```
+
+Then perform one of the available functions, using the payload described on [Iris docs](https://iris-docs.midtrans.com), e.g:
+```javascript
+let iris = new midtransClient.Iris({
+        isProduction : false,
+        serverKey : 'YOUR_API_KEY'
+    });
+
+iris.createBeneficiaries({
+  "name": "Budi Susantoo",
+  "account": "0611101146",
+  "bank": "bca",
+  "alias_name": "budisusantoo",
+  "email": "budi.susantoo@example.com"
+})
+  .then((res)=>{
+    // do something based on the API response
+  })
+  .catch((err)=>{
+    // do something based on the Error object & message
+  })
+```
+
+### 5.2 Available methods of Iris API
+
+```javascript
+
+  /**
+   * Do `/ping` API request to Iris API
+   * @return {Promise} - Promise contains String response
+   */
+  ping()
+  /**
+   * Do create `/beneficiaries` API request to Iris API
+   * @param  {Object} parameter - object of Iris API JSON body as parameter, will be converted to JSON (more params detail refer to: https://iris-docs.midtrans.com)
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  createBeneficiaries(parameter={})
+  /**
+   * Do update `/beneficiaries/<alias_name>` API request to Iris API
+   * @param  {String} parameter - alias_name of the beneficiaries that need to be updated
+   * @param  {Object} parameter - object of Iris API JSON body as parameter, will be converted to JSON (more params detail refer to: https://iris-docs.midtrans.com)
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  updateBeneficiaries(aliasName,parameter={})
+  /**
+   * Do `/beneficiaries` API request to Iris API
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getBeneficiaries()
+  /**
+   * Do create `/payouts` API request to Iris API
+   * @param  {Object} parameter - object of Iris API JSON body as parameter, will be converted to JSON (more params detail refer to: https://iris-docs.midtrans.com)
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  createPayouts(parameter={})
+  /**
+   * Do approve `/payouts/approve` API request to Iris API
+   * @param  {Object} parameter - object of Iris API JSON body as parameter, will be converted to JSON (more params detail refer to: https://iris-docs.midtrans.com)
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  approvePayouts(parameter={})
+  /**
+   * Do reject `/payouts/reject` API request to Iris API
+   * @param  {Object} parameter - object of Iris API JSON body as parameter, will be converted to JSON (more params detail refer to: https://iris-docs.midtrans.com)
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  rejectPayouts(parameter={})
+  /**
+   * Do `/payouts/<reference_no>` API request to Iris API
+   * @param  {String} parameter - reference_no of the payout
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getPayoutDetails(referenceNo)
+  /**
+   * Do `/statements` API request to Iris API
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getTransactionHistory(parameter={})
+  /**
+   * Do `/channels` API request to Iris API
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getTopupChannels()
+  /**
+   * Do `/balance` API request to Iris API
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getBalance()
+  /**
+   * Do `/bank_accounts` API request to Iris API
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getFacilitatorBankAccounts()
+  /**
+   * Do `/bank_accounts/<bank_account_id>/balance` API request to Iris API
+   * @param  {String} parameter - bank_account_id of the bank account
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getFacilitatorBalance(bankAccountId)
+  /**
+   * Do `/beneficiary_banks` API request to Iris API
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getBeneficiaryBanks()
+  /**
+   * Do `/account_validation` API request to Iris API
+   * @param  {Object} parameter - object of Iris API JSON body as parameter, will be converted to GET Query param (more params detail refer to: https://iris-docs.midtrans.com)
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  validateBankAccount(parameter={})
+```
+
+You can also refer to [Iris test cases](/test/iris.test.js) for sample usage for now. Dedicated sample usage might be written later in the future.
+
+## Examples
 Examples are available on [/examples](/examples) folder.
 There are:
 - [Core Api examples](/examples/coreApi)
