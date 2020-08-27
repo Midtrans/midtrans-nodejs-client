@@ -4,6 +4,8 @@ const cons = {
 	CORE_SANDBOX_BASE_URL : 'https://api.sandbox.midtrans.com/v2',
 	CORE_PRODUCTION_BASE_URL : 'https://api.midtrans.com/v2',
 	SNAP_SANDBOX_BASE_URL : 'https://app.sandbox.midtrans.com/snap/v1',
-	SNAP_PRODUCTION_BASE_URL : 'https://app.midtrans.com/snap/v1'
+	SNAP_PRODUCTION_BASE_URL : 'https://app.midtrans.com/snap/v1',
+	// iris related
+	irisApiKey : 'IRIS-330198f0-e49d-493f-baae-585cfded355d'
 }
 module.exports = cons;

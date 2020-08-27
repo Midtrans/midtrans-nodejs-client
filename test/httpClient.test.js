@@ -76,6 +76,7 @@ describe('httpClient.js',()=> {
   
   it('able to throw connection failure exception',()=>{
     let httpClient = new HttpClient();
+    httpClient.http_client.defaults.timeout = 2500; // override/set axios timeout param
     return httpClient.request('post',cons.serverKey,'https://non-exist-unreachable-domain-name.com'+'/transactions',generateParamMin())
     .then((res)=>{})
     .catch((e)=>{

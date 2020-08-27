@@ -342,17 +342,22 @@ apiClient.transaction.notification(notificationJson)
         // Sample transactionStatus handling logic
 
         if (transactionStatus == 'capture'){
+            // capture only applies to card transaction, which you need to check for the fraudStatus
             if (fraudStatus == 'challenge'){
                 // TODO set transaction status on your databaase to 'challenge'
             } else if (fraudStatus == 'accept'){
                 // TODO set transaction status on your databaase to 'success'
             }
+        } else if (transactionStatus == 'settlement'){
+            // TODO set transaction status on your databaase to 'success'
+        } else if (transactionStatus == 'deny'){
+            // TODO you can ignore 'deny', because most of the time it allows payment retries
+            // and later can become success
         } else if (transactionStatus == 'cancel' ||
-          transactionStatus == 'deny' ||
           transactionStatus == 'expire'){
-          // TODO set transaction status on your databaase to 'failure'
+            // TODO set transaction status on your databaase to 'failure'
         } else if (transactionStatus == 'pending'){
-          // TODO set transaction status on your databaase to 'pending' / waiting payment
+            // TODO set transaction status on your databaase to 'pending' / waiting payment
         }
     });
 ```
@@ -445,12 +450,204 @@ snap.createTransaction(parameter)
       })
 ```
 
-## 4. Examples
+## 4. Advanced Usage
+### Custom Http Client Config
+Under the hood this API wrapper is using [Axios](https://github.com/axios/axios) as http client. You can override the default config. 
+
+You can set via the value of this `<api-client-instance>.httpClient.http_client.defaults` object, like [described in Axios guide](https://github.com/axios/axios#global-axios-defaults). e.g:
+```javascript
+// create instance of api client
+let snap = new midtransClient.Snap({
+        isProduction : false,
+        serverKey : 'YOUR_SERVER_KEY',
+        clientKey : 'YOUR_CLIENT_KEY'
+    });
+
+// set Axios timeout config to 2500
+snap.httpClient.http_client.defaults.timeout = 2500; 
+
+// set custom HTTP header for every request from this instance
+snap.httpClient.http_client.headers.common['My-Header'] = 'my-custom-value';
+```
+### Custom Http Client Interceptor
+As Axios [also support interceptor](https://github.com/axios/axios#interceptors), you can also apply it here. e.g:
+```javascript
+// Add a request interceptor
+snap.httpClient.http_client.interceptors.request.use(function (config) {
+    // Do something before request is sent
+    return config;
+  }, function (error) {
+    // Do something with request error
+    return Promise.reject(error);
+  });
+```
+
+It can be used for example to customize/manipulate http request's body, header, etc. before it got sent to the destination API url.
+
+### Override Http Notification Url
+As [described in API docs](https://snap-docs.midtrans.com/#override-notification-url), merchant can opt to change or add custom notification urls on every transaction. It can be achieved by adding additional HTTP headers into charge request.
+
+This can be achived by:
+```javascript
+// create instance of api client
+let snap = new midtransClient.Snap({
+        isProduction : false,
+        serverKey : 'YOUR_SERVER_KEY',
+        clientKey : 'YOUR_CLIENT_KEY'
+});
+
+// set custom HTTP header that will be used by Midtrans API to override notification url:
+snap.httpClient.http_client.headers.common['X-Override-Notification'] = 'https://mysite/midtrans-notification-handler';
+```
+
+or append notification:
+```javascript
+snap.httpClient.http_client.headers.common['X-Append-Notification'] = 'https://mysite/midtrans-notification-handler';
+```
+
+## 5. Iris Disbursement API
+
+[Iris](https://iris-docs.midtrans.com) is Midtrans’ cash management solution that allows you to disburse payments to any bank accounts in Indonesia securely and easily. Iris connects to the banks’ hosts to enable seamless transfer using integrated APIs.
+
+For more details please visit: https://iris-docs.midtrans.com
+
+### 5.1 Client Initialization
+
+Get your API key from [Midtrans Iris Dashboard](https://app.midtrans.com/iris)
+
+Create API client object. Note: the serverKey means your API key.
+
+```javascript
+const midtransClient = require('midtrans-client');
+// Create Core API instance
+let iris = new midtransClient.Iris({
+        isProduction : false,
+        serverKey : 'YOUR_API_KEY'
+    });
+```
+
+Then perform one of the available functions, using the payload described on [Iris docs](https://iris-docs.midtrans.com), e.g:
+```javascript
+let iris = new midtransClient.Iris({
+        isProduction : false,
+        serverKey : 'YOUR_API_KEY'
+    });
+
+iris.createBeneficiaries({
+  "name": "Budi Susantoo",
+  "account": "0611101146",
+  "bank": "bca",
+  "alias_name": "budisusantoo",
+  "email": "budi.susantoo@example.com"
+})
+  .then((res)=>{
+    // do something based on the API response
+  })
+  .catch((err)=>{
+    // do something based on the Error object & message
+  })
+```
+
+### 5.2 Available methods of Iris API
+
+```javascript
+
+  /**
+   * Do `/ping` API request to Iris API
+   * @return {Promise} - Promise contains String response
+   */
+  ping()
+  /**
+   * Do create `/beneficiaries` API request to Iris API
+   * @param  {Object} parameter - object of Iris API JSON body as parameter, will be converted to JSON (more params detail refer to: https://iris-docs.midtrans.com)
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  createBeneficiaries(parameter={})
+  /**
+   * Do update `/beneficiaries/<alias_name>` API request to Iris API
+   * @param  {String} parameter - alias_name of the beneficiaries that need to be updated
+   * @param  {Object} parameter - object of Iris API JSON body as parameter, will be converted to JSON (more params detail refer to: https://iris-docs.midtrans.com)
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  updateBeneficiaries(aliasName,parameter={})
+  /**
+   * Do `/beneficiaries` API request to Iris API
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getBeneficiaries()
+  /**
+   * Do create `/payouts` API request to Iris API
+   * @param  {Object} parameter - object of Iris API JSON body as parameter, will be converted to JSON (more params detail refer to: https://iris-docs.midtrans.com)
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  createPayouts(parameter={})
+  /**
+   * Do approve `/payouts/approve` API request to Iris API
+   * @param  {Object} parameter - object of Iris API JSON body as parameter, will be converted to JSON (more params detail refer to: https://iris-docs.midtrans.com)
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  approvePayouts(parameter={})
+  /**
+   * Do reject `/payouts/reject` API request to Iris API
+   * @param  {Object} parameter - object of Iris API JSON body as parameter, will be converted to JSON (more params detail refer to: https://iris-docs.midtrans.com)
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  rejectPayouts(parameter={})
+  /**
+   * Do `/payouts/<reference_no>` API request to Iris API
+   * @param  {String} parameter - reference_no of the payout
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getPayoutDetails(referenceNo)
+  /**
+   * Do `/statements` API request to Iris API
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getTransactionHistory(parameter={})
+  /**
+   * Do `/channels` API request to Iris API
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getTopupChannels()
+  /**
+   * Do `/balance` API request to Iris API
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getBalance()
+  /**
+   * Do `/bank_accounts` API request to Iris API
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getFacilitatorBankAccounts()
+  /**
+   * Do `/bank_accounts/<bank_account_id>/balance` API request to Iris API
+   * @param  {String} parameter - bank_account_id of the bank account
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getFacilitatorBalance(bankAccountId)
+  /**
+   * Do `/beneficiary_banks` API request to Iris API
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  getBeneficiaryBanks()
+  /**
+   * Do `/account_validation` API request to Iris API
+   * @param  {Object} parameter - object of Iris API JSON body as parameter, will be converted to GET Query param (more params detail refer to: https://iris-docs.midtrans.com)
+   * @return {Promise} - Promise contains Object from JSON decoded response
+   */
+  validateBankAccount(parameter={})
+```
+
+You can also refer to [Iris test cases](/test/iris.test.js) for sample usage for now. Dedicated sample usage might be written later in the future.
+
+## Examples
 Examples are available on [/examples](/examples) folder.
 There are:
 - [Core Api examples](/examples/coreApi)
 - [Snap examples](/examples/snapApi)
 - [Express App examples](/examples/expressApp) that implement Snap & Core Api
+
+<!-- @TODO: document ## 5. IRIS -->
 
 ## Get help
 
