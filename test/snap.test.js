@@ -168,6 +168,34 @@ describe('Snap.js',()=> {
       })
   })
 
+  it('able to set X-Override-Notification request header via exposed http_client object',()=>{
+    let config = generateConfig();
+    let snap = new Snap(config);
+    let param = generateParamMin();
+    let customUrl = 'https://mysite.com/midtrans-notification-handler';
+    
+    snap.httpClient.http_client.interceptors.request.use(
+      function (config) {
+        // Do something before request is sent
+        expect(config.headers.common['X-Override-Notification']).to.be.equals(customUrl);
+        return config;
+      }, function (error) {
+        // Do something with request error
+        return Promise.reject(error);
+      });
+      
+    snap.httpClient.http_client.defaults.headers.common['X-Override-Notification'] = customUrl;
+    snap.createTransactionToken()
+      .catch((e)=>{
+        expect(snap.httpClient.http_client.defaults).to.have.property('headers');
+        expect(snap.httpClient.http_client.defaults.headers.common)
+          .to.be.an('object');
+        expect(snap.httpClient.http_client.defaults.headers.common['X-Override-Notification'])
+          .to.be.equals(customUrl);
+      });
+
+  })
+
 })
 
 function generateTimestamp(devider=1){

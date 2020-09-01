@@ -467,7 +467,7 @@ let snap = new midtransClient.Snap({
 snap.httpClient.http_client.defaults.timeout = 2500; 
 
 // set custom HTTP header for every request from this instance
-snap.httpClient.http_client.headers.common['My-Header'] = 'my-custom-value';
+snap.httpClient.http_client.defaults.headers.common['My-Header'] = 'my-custom-value';
 ```
 ### Custom Http Client Interceptor
 As Axios [also support interceptor](https://github.com/axios/axios#interceptors), you can also apply it here. e.g:
@@ -497,12 +497,12 @@ let snap = new midtransClient.Snap({
 });
 
 // set custom HTTP header that will be used by Midtrans API to override notification url:
-snap.httpClient.http_client.headers.common['X-Override-Notification'] = 'https://mysite/midtrans-notification-handler';
+snap.httpClient.http_client.defaults.headers.common['X-Override-Notification'] = 'https://mysite.com/midtrans-notification-handler';
 ```
 
 or append notification:
 ```javascript
-snap.httpClient.http_client.headers.common['X-Append-Notification'] = 'https://mysite/midtrans-notification-handler';
+snap.httpClient.http_client.defaults.headers.common['X-Append-Notification'] = 'https://mysite.com/midtrans-notification-handler';
 ```
 
 ## 5. Iris Disbursement API
