@@ -184,9 +184,11 @@ describe('Iris.js',()=> {
     return iris.getTransactionHistory()
       .then((res)=>{
         expect(res).to.be.an('array');
-        expect(res[0].status).to.be.a('string');
-        expect(res[0].reference_no).to.be.a('string');
-        expect(res[0].beneficiary_account).to.be.a('string');
+        if(res.length > 0){
+          expect(res[0].status).to.be.a('string');
+          expect(res[0].reference_no).to.be.a('string');
+          expect(res[0].beneficiary_account).to.be.a('string');
+        }
       })
   })
 
