@@ -1,10 +1,12 @@
 import midtransClient, { SnapInterface, snapOptions, transactionError } from './../../index.js';
 /**
- * import midtransClient from 'midtrans-client'; // use this if installed via NPM
+ * If the package is installed via NPM / Yarn, use this instead:
+ * 
+ *  import midtransClient from 'midtrans-client';
  * 
  * If you want to import interface from typings, use:
  * 
- * import midtransClient, { SnapInterface, snapOptions } from "midtrans-client";
+ *  import midtransClient, { SnapInterface, snapOptions, transactionError } from "midtrans-client";
  * */ 
 
 // initialize snap client object
@@ -145,16 +147,16 @@ snap.createTransactionToken(parameter)
     .then((transactionToken: string) => {
         console.log('transactionToken:', transactionToken);
     })
-    .catch((e: transactionError)=>{
+    .catch((e: transactionError) => {
         console.log('Error occured:', e.message);
     });
 
 // alternative way to create transactionRedirectUrl
 snap.createTransactionRedirectUrl(parameter)
-    .then((transactionRedirectUrl: string)=>{
+    .then((transactionRedirectUrl: string) => {
         console.log('transactionRedirectUrl:', transactionRedirectUrl);
     })
-    .catch((e: transactionError)=>{
+    .catch((e: transactionError) => {
         console.log('Error occured:', e.message);
     });
 

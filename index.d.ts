@@ -112,7 +112,7 @@ declare namespace Midtrans {
             item_details: Array<itemDetails>
             customer_details: customerDetails,
             enabled_payments: Array<paymentType>,
-            credit_card: {
+            credit_card?: {
                 secure?: boolean,
                 channel?: string,
                 bank?: string,
@@ -138,7 +138,7 @@ declare namespace Midtrans {
                 type?: string,
                 save_token_id?: boolean
             },
-            bca_va: {
+            bca_va?: {
                 va_number: string,
                 sub_company_code?: string,
                 free_text?: {
@@ -146,30 +146,30 @@ declare namespace Midtrans {
                     payment: Array<bcaText>
                 }
             },
-            bni_va: {
+            bni_va?: {
                 va_number: string
             },
-            bri_va: {
+            bri_va?: {
                 va_number: string
             },
-            permata_va: {
+            permata_va?: {
                 va_number: string,
                 recipient_name: string
             },
-            shopeepay: {
+            shopeepay?: {
                 callback_url: string
             },
-            callbacks: {
+            callbacks?: {
                 finish: string,
             },
-            expiry: {
+            expiry?: {
                 start_time: string,
                 unit: "day" | "hour" | "minute" | "days" | "hours" | "minutes",
                 duration: number
             },
-            custom_field1: string | number | boolean | Record<string, string | number | boolean | symbol> | Array<string | number | boolean | symbol>,
-            custom_field2: string | number | boolean | Record<string, string | number | boolean | symbol> | Array<string | number | boolean | symbol>,
-            custom_field3: string | number | boolean | Record<string, string | number | boolean | symbol> | Array<string | number | boolean | symbol>
+            custom_field1?: string | number | boolean | Record<string, string | number | boolean | symbol> | Array<string | number | boolean | symbol>,
+            custom_field2?: string | number | boolean | Record<string, string | number | boolean | symbol> | Array<string | number | boolean | symbol>,
+            custom_field3?: string | number | boolean | Record<string, string | number | boolean | symbol> | Array<string | number | boolean | symbol>
         }
 
         interface transactionRequest extends Partial<completeRequest> {
@@ -183,8 +183,8 @@ declare namespace Midtrans {
          * Response type for any Snap API function
          */
         interface response {
-            token: string,
-            redirect_url: string
+            token?: string,
+            redirect_url?: string
         }
     }
 
@@ -222,12 +222,13 @@ declare namespace Midtrans {
     }
 
     namespace midtransError {
-        interface customError extends Error {
+        interface customError {
             name?: string,
             ApiResponse?: string | number | Record<string | number, string | number | boolean | symbol> | null,
             message?: string,
             httpStatusCode?: string | number | null,
-            rawHttpClientData?: string | number | Record<string | number, string | number | boolean | symbol> | null
+            rawHttpClientData?: string | number | Record<string | number, string | number | boolean | symbol> | null,
+            stack?: string
         }
     
         interface errorResponse {
@@ -305,13 +306,14 @@ declare namespace Midtrans {
     export class Transaction {
         constructor(parentObj: ThisType<symbol | constructorOptions | null>)
         status(transactionId?: string): Promise<Record<string, string | boolean | number> | transactionError>
+        statusb2b(transactionId?: string): Promise<Record<string, string | boolean | number> | transactionError>
         approve(transactionId?: string): Promise<Record<string, string | boolean | number> | transactionError>
         deny(transactionId?: string): Promise<Record<string, string | boolean | number> | transactionError>
         cancel(transactionId?: string): Promise<Record<string, string | boolean | number> | transactionError>
         expire(transactionId?: string): Promise<Record<string, string | boolean | number> | transactionError>
         refund(transactionId?: string, parameter?: SnapInterface.transactionRequest): Promise<Record<string, string | boolean | number> | transactionError>
         refundDirect(transactionId?: string, parameter?: SnapInterface.transactionRequest): Promise<Record<string, string | boolean | number> | transactionError>
-        notification(notificationObject?: NotificationInterface.parameters): Promise<NotificationInterface.response>
+        notification(notificationObject?: NotificationInterface.parameters): Promise<NotificationInterface.response | transactionError>
     }
 
     /**
@@ -477,7 +479,7 @@ declare namespace Midtrans {
             beneficiary_email?: string,
             amount: string,
             notes?: string,
-            bank_account_id: string
+            bank_account_id?: string
         }
 
         interface payoutsResult {
@@ -562,7 +564,8 @@ declare namespace Midtrans {
 
         /**
          * Do `/ping` API request to Iris API
-         * @return {String} Literally "pong"
+         * @return {Promise} Literally "pong"
+         * @see {@link https://iris-docs.midtrans.com/#ping} Documentation
          */
         ping(): Promise<string | transactionError>
 
@@ -657,7 +660,7 @@ declare namespace Midtrans {
          * @return {Promise} - Promise contains Object from JSON decoded response
          * @see {@link https://iris-docs.midtrans.com/#check-balance-facilitator} Documentation
          */
-        getFacilitatorBalance(bankAccountId: string): Promise<{balance: string} | transactionError>
+        getFacilitatorBalance(bankAccountId: string): Promise<{ balance: string } | transactionError>
         
         /**
          * Do `/beneficiary_banks` API request to Iris API

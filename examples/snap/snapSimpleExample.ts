@@ -1,10 +1,12 @@
 import midtransClient, { SnapInterface, snapOptions, transactionError } from './../../index.js';
 /**
- * import midtransClient from 'midtrans-client'; // use this if installed via NPM
+ * If the package is installed via NPM / Yarn, use this instead:
+ * 
+ *  import midtransClient from 'midtrans-client';
  * 
  * If you want to import interface from typings, use:
  * 
- * import midtransClient, { snapOptions, SnapInterface } from "midtrans-client";
+ *  import midtransClient, { SnapInterface, snapOptions, transactionError } from "midtrans-client";
  * */ 
 
 // initialize snap client object

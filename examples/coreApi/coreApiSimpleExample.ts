@@ -1,10 +1,13 @@
 import midtransClient, { CoreApiInterface, coreApiOptions } from './../../index.js';
 /**
- * import midtransClient from 'midtrans-client'; // use this if installed via NPM
+ * If the package is installed via NPM / Yarn, use this instead:
+ * 
+ *  import midtransClient from 'midtrans-client';
  * 
  * If you want to import interface from typings, use:
  * 
- * import midtransClient, { CoreApiInterface, coreApiOptions } from "midtrans-client";
+ *  import midtransClient, { CoreApiInterface, coreApiOptions } from "midtrans-client";
+ * 
  * */ 
 
 // initialize core api client object

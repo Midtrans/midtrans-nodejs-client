@@ -1,10 +1,12 @@
 import midtransClient, { NotificationInterface, snapOptions } from './../../index.js';
 /**
- * import midtransClient from 'midtrans-client'; // use this if installed via NPM
+ * If the package is installed via NPM / Yarn, use this instead:
+ * 
+ *  import midtransClient from "midtrans-client";
  * 
  * If you want to import interface from typings, use:
  * 
- * import midtransClient, { NotificationInterface, snapOptions } from "midtrans-client";
+ *  import midtransClient, { NotificationInterface, snapOptions } from "midtrans-client";
  * */ 
 
 // initialize core api / snap client object
