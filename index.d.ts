@@ -195,6 +195,7 @@ declare namespace Midtrans {
      */
     export class Snap {
         transaction: Transaction
+        apiConfig: ApiConfig
         constructor(options: snapOptions)
         /**
          * Do `/transactions` API request to Snap API
@@ -253,7 +254,6 @@ declare namespace Midtrans {
          */
         interface parametersOptions {
             signature_key?: string,
-            fraud_status?: string,
             approval_code?: string,
             bank?: string,
             channel_response_code?: string,
@@ -280,22 +280,26 @@ declare namespace Midtrans {
             transaction_status: string,
             gross_amount: string,
             order_id: string,
-            payment_type: paymentType
+            payment_type: paymentType,
+            fraud_status?: string,
+        }
+
+        interface responseObject extends Partial<parametersOptions> {
+            status_code?: string,
+            status_message?: string,
+            transaction_time?: string,
+            transaction_id?: string,
+            transaction_status?: string,
+            gross_amount?: string,
+            order_id?: string,
+            payment_type?: paymentType,
+            fraud_status?: string,
         }
 
         /**
          * Response type for any Notification function
          */
-        interface response extends Partial<parametersOptions> {
-            status_code?: string,
-            status_message?: string,
-            transaction_time?: string,
-            transaction_id?: string,
-            transaction_status: string,
-            gross_amount?: string,
-            order_id?: string,
-            payment_type?: paymentType
-        }
+        type response = responseObject | Record<string, string | boolean | number> 
     }
 
     /**
@@ -304,6 +308,7 @@ declare namespace Midtrans {
      * @class Transaction
      */
     export class Transaction {
+        apiConfig: ApiConfig
         constructor(parentObj: ThisType<symbol | constructorOptions | null>)
         status(transactionId?: string): Promise<Record<string, string | boolean | number> | transactionError>
         statusb2b(transactionId?: string): Promise<Record<string, string | boolean | number> | transactionError>
@@ -313,7 +318,7 @@ declare namespace Midtrans {
         expire(transactionId?: string): Promise<Record<string, string | boolean | number> | transactionError>
         refund(transactionId?: string, parameter?: SnapInterface.transactionRequest): Promise<Record<string, string | boolean | number> | transactionError>
         refundDirect(transactionId?: string, parameter?: SnapInterface.transactionRequest): Promise<Record<string, string | boolean | number> | transactionError>
-        notification(notificationObject?: NotificationInterface.parameters): Promise<NotificationInterface.response | transactionError>
+        notification(notificationObject?: NotificationInterface.parameters): Promise<NotificationInterface.responseObject | transactionError>
     }
 
     /**
@@ -403,7 +408,7 @@ declare namespace Midtrans {
         /**
          * Response type for any CoreApi function
          */
-        type response = Record<string, string | boolean | number>
+        type response = Record<string, string | boolean | number> | string | Array<string | boolean | number>
     }
 
     /**
@@ -413,6 +418,7 @@ declare namespace Midtrans {
      */
     export class CoreApi {
         transaction: Transaction
+        apiConfig: ApiConfig
         constructor(options: coreApiOptions)
 
         /**
@@ -560,6 +566,7 @@ declare namespace Midtrans {
      */
     export class Iris {
         transaction: Transaction
+        apiConfig: ApiConfig
         constructor(options: irisOptions)
 
         /**
@@ -676,5 +683,14 @@ declare namespace Midtrans {
          * @see {@link https://iris-docs.midtrans.com/#validate-bank-account} Documentation
          */
         validateBankAccount(parameters: IrisInterface.validateBank): Promise<{ account_name: string, account_no: string, bank_name: string} | transactionError>
+    }
+
+    export class ApiConfig {
+        clientKey: snapOptions | coreApiOptions
+        serverKey: snapOptions | coreApiOptions | irisOptions
+        constructor(options: snapOptions | coreApiOptions | irisOptions)
+        get(): snapOptions | coreApiOptions | irisOptions
+        set(options: snapOptions | coreApiOptions | irisOptions): string
+        getIrisApiBaseUrl(): string
     }
 }

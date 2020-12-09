@@ -8,13 +8,12 @@
  */
 
 import express, { Application, Request, Response } from 'express';
-import midtransClient from 'midtrans-client';
-import { constructorOptions, CoreApiInterface, coreApiOptions, NotificationInterface, SnapInterface, transactionError } from '../..'; // this is just for development purpose, see comments below
+import midtransClient, { CoreApiInterface, coreApiOptions, NotificationInterface, SnapInterface, snapOptions, transactionError } from '../..';
 
 /**
- * If you want to import interfaces from typings, use:
+ * For production use, please refer to notes below:
  * 
- * import midtransClient, { constructorOptions, CoreApiInterface, coreApiOptions, NotificationInterface, SnapInterface, transactionError } from "midtrans-client";
+ * import midtransClient, { CoreApiInterface, coreApiOptions, NotificationInterface, SnapInterface, transactionError } from "midtrans-client";
  * 
  */
 
@@ -39,7 +38,8 @@ app.get('/simple_checkout', function (req: Request, res: Response) {
     isProduction : false,
     serverKey : 'SB-Mid-server-GwUP_WGbJPXsDzsNEBRs8IYA',
     clientKey : 'SB-Mid-client-61XuGAwQ8Bj8LxSS'
-  } as constructorOptions);
+  } as snapOptions);
+
   const parameter: SnapInterface.transactionRequest = {
     "transaction_details": {
       "order_id": "order-id-node-" + Math.round((new Date()).getTime() / 1000),
@@ -49,9 +49,10 @@ app.get('/simple_checkout', function (req: Request, res: Response) {
       "secure": true
     }
   };
+
   // create snap transaction token
   snap.createTransactionToken(parameter)
-    .then((transactionToken: SnapInterface.response) => {
+    .then((transactionToken: string): void => {
         // pass transaction token to frontend
         res.render('simple_checkout', {
           token: transactionToken, 
@@ -85,17 +86,17 @@ app.post('/charge_core_api_ajax', function (req: Request, res: Response) {
     "payment_type": "credit_card",
     "transaction_details": {
       "gross_amount": 200000,
-      "order_id": "order-id-node-"+Math.round((new Date()).getTime() / 1000),
+      "order_id": "order-id-node-" + Math.round((new Date()).getTime() / 1000),
     },
     "credit_card":{
       "token_id": req.body.token_id,
       "authentication": req.body.authenticate_3ds,
     }
   } as CoreApiInterface.transactionRequest)
-  .then((apiResponse: CoreApiInterface.response) => {
+  .then((apiResponse: Record<string, any>): void => {
     res.send(`${JSON.stringify(apiResponse, null, 2)}`)
   })
-  .catch((err: transactionError) => {
+  .catch((err: transactionError): void => {
     res.send(`${JSON.stringify(err.message, null, 2)}`)
   })
 })
@@ -105,7 +106,7 @@ app.post('/charge_core_api_ajax', function (req: Request, res: Response) {
 app.post('/check_transaction_status', function (req: Request, res: Response) {
   console.log(`- Received check transaction status request:`, req.body);
   core.transaction.status(req.body.transaction_id)
-    .then((transactionStatusObject: CoreApiInterface.response) => {
+    .then((transactionStatusObject: Record<string, any>): void => {
       const orderId = transactionStatusObject.order_id;
       const transactionStatus = transactionStatusObject.transaction_status;
       const fraudStatus = transactionStatusObject.fraud_status;
@@ -148,7 +149,7 @@ app.post('/check_transaction_status', function (req: Request, res: Response) {
 app.post('/notification_handler', function (req: Request, res: Response) {
   const receivedJson = req.body;
   core.transaction.notification(receivedJson)
-    .then((transactionStatusObject: NotificationInterface.response) => {
+    .then((transactionStatusObject: Record<string, any>): void => {
       const orderId = transactionStatusObject.order_id;
       const transactionStatus = transactionStatusObject.transaction_status;
       const fraudStatus = transactionStatusObject.fraud_status;
@@ -179,6 +180,9 @@ app.post('/notification_handler', function (req: Request, res: Response) {
       }
       console.log(summary);
       res.send(summary);
+    }).catch((error): void => {
+      // TODO if error
+      console.log(error)
     });
 })
 
@@ -196,7 +200,7 @@ app.get('/simple_core_api_checkout_permata', function (req: Request, res: Respon
       "order_id": "order-id-node-"+Math.round((new Date()).getTime() / 1000),
     }
   })
-  .then((apiResponse: CoreApiInterface.response)=>{
+  .then((apiResponse: Record<string, any>): void => {
     res.render('simple_core_api_checkout_permata', {
       vaNumber: apiResponse.permata_va_number,
       amount: apiResponse.gross_amount,
