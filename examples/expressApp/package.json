@@ -1,6 +1,6 @@
 {
   "name": "midtrans-payment-example-app",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "scripts": {
     "start": "node ./app.js",
@@ -9,9 +9,9 @@
   "dependencies": {
     "ejs": "~2.5.7",
     "express": "~4.16.0",
-    "midtrans-client": "^1.0.3"
+    "midtrans-client": "^1.2.2"
   },
   "devDependencies": {
-    "nodemon": "^1.19.1"
+    "nodemon": "^1.19.4"
   }
 }

@@ -20,6 +20,12 @@ npm publish
 # You may be asked for login username and password for npmjs.com
 ```
 
+## Updating Dependency via NPM Audit
+- run `npm audit`
+- run `npm audit fix` to fix vuln & update deps if any
+- run `npm test` to make sure nothing breaks
+- Continue to [Updating Package](#updating-package) section above
+
 ## Dev & Test via Docker Compose
 
 - To use docker-compose to test and run project, `cd` to repo dir
