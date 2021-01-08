@@ -110,7 +110,7 @@ let parameter = {
         "finish": "https://demo.midtrans.com"
     },
     "expiry": {
-        "start_time": "2020-12-20 18:11:08 +0700",
+        "start_time": "2025-12-20 18:11:08 +0700",
         "unit": "minute",
         "duration": 9000
     },
