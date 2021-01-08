@@ -8,3 +8,5 @@
 .flowconfig
 .sublime-project
 package-lock.json
+docker-entrypoint.sh
+docker-compose.yml
