@@ -24,8 +24,8 @@
   "author": "rizda.prasetya@midtrans.com",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.19.2",
-    "lodash": "^4.17.11"
+    "axios": "^0.21.1",
+    "lodash": "^4.17.20"
   },
   "devDependencies": {
     "chai": "^4.2.0",
