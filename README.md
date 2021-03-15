@@ -644,7 +644,7 @@ You can also refer to [Iris test cases](/test/iris.test.js) for sample usage for
 Examples are available on [/examples](/examples) folder.
 There are:
 - [Core Api examples](/examples/coreApi)
-- [Snap examples](/examples/snapApi)
+- [Snap examples](/examples/snap)
 - [Express App examples](/examples/expressApp) that implement Snap & Core Api
 
 <!-- @TODO: document ## 5. IRIS -->
