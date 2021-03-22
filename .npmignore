@@ -10,3 +10,4 @@
 package-lock.json
 docker-entrypoint.sh
 docker-compose.yml
+Dockerfile
