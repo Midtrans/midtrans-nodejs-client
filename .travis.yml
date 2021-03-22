@@ -3,6 +3,7 @@ node_js:
   - "node"
   - "lts/*"
   # - "14" # Node v14 not yet available on travis apparently
+  - "14"
   - "12"
   - "10"
   - "8"
