@@ -247,11 +247,16 @@ describe('CoreApi.js',()=> {
       })
   })
 
-  it('fail to charge 400 with empty param',()=>{
+  it('fail to charge error with empty param',()=>{
     let core = new CoreApi(generateConfig());
-    return core.charge(null)
+    return core.charge()
       .catch((e)=>{
-        expect(e.message).to.includes('400');
+        expect(e.message).to.satisfy((message)=>{
+          if(message.includes('400') || message.includes('error')){
+            return true;
+          }
+          return false;
+        });
       })
   })
 

@@ -240,8 +240,8 @@ describe('Iris.js',()=> {
   it('able to validateBankAccount',()=>{
     let iris = new Iris(generateConfig());
     return iris.validateBankAccount({
-      bank:"danamon",
-      account:"000001137298"
+      bank:"mandiri",
+      account:"1111222233333"
     })
       .then((res)=>{
         expect(res.account_no).to.be.a('string');
