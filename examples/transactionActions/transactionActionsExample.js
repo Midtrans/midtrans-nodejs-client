@@ -1,7 +1,9 @@
 const midtransClient = require('./../../index.js');
 // const midtransClient = require('midtrans-client'); // use this if installed via NPM
 
-// initialize core api / snap client object
+// This is just for very basic implementation reference, in production, you should validate the incoming requests and implement your backend more securely.
+// initialize api client object
+// can find in Merchant Portal -> Settings -> Access keys
 let apiClient = new midtransClient.Snap({
     isProduction : false,
     serverKey : 'YOUR_SERVER_KEY',
@@ -9,7 +11,6 @@ let apiClient = new midtransClient.Snap({
 });
 
 // These are wrapper/implementation of API methods described on: https://api-docs.midtrans.com/#midtrans-api
-
 
 // get status of transaction that already recorded on midtrans (already `charge`-ed) 
 apiClient.transaction.status('YOUR_ORDER_ID OR TRANSACTION_ID')

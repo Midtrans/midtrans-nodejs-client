@@ -1,14 +1,17 @@
 const midtransClient = require('./../../index.js');
 // const midtransClient = require('midtrans-client'); // use this if installed via NPM
 
+// This is just for very basic implementation reference, in production, you should validate the incoming requests and implement your backend more securely.
+
 // initialize core api client object
+// can find in Merchant Portal -> Settings -> Access keys
 let core = new midtransClient.CoreApi({
     isProduction : false,
     serverKey : 'YOUR_SERVER_KEY',
     clientKey : 'YOUR_CLIENT_KEY'
 });
 
-// prepare Core API parameter ( refer to: https://api-docs.midtrans.com ) minimum parameter example:
+// prepare CORE API parameter ( refer to: https://docs.midtrans.com/en/core-api/bank-transfer?id=sample-request-and-request-body ) charge bank_transfer parameter example
 let parameter = {
     "payment_type": "bank_transfer",
     "transaction_details": {
