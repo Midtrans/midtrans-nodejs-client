@@ -209,7 +209,6 @@ app.get('/', function (req, res) {
 })
 
 function printExampleWarningMessage() {
-  // pathfile = os.path.abspath("web.py")
   message = "<code><h4>Please set your server key and client key from sandbox</h4>In file: " + __filename
   message += "<br><br># Set Your server key"
   message += "<br># can find in Merchant Portal -> Settings -> Access keys"
