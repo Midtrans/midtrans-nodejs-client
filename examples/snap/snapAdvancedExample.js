@@ -8,8 +8,8 @@ const midtransClient = require('./../../index.js');
 // Please refer to this docs for snap-redirect:
 // https://docs.midtrans.com/en/snap/integration-guide?id=alternative-way-to-display-snap-payment-page-via-redirect
 
-// initialize snap client object
-// can find in Merchant Portal -> Settings -> Access keys
+// Initialize snap client object
+// You can find it in Merchant Portal -> Settings -> Access keys
 let snap = new midtransClient.Snap({
     isProduction : false,
     serverKey : 'YOUR_SERVER_KEY',

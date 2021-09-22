@@ -2,8 +2,8 @@ const midtransClient = require('./../../index.js');
 // const midtransClient = require('midtrans-client'); // use this if installed via NPM
 
 // This is just for very basic implementation reference, in production, you should validate the incoming requests and implement your backend more securely.
-// initialize api client object
-// can find in Merchant Portal -> Settings -> Access keys
+// Initialize api client object
+// You can find it in Merchant Portal -> Settings -> Access keys
 let apiClient = new midtransClient.Snap({
     isProduction : false,
     serverKey : 'YOUR_SERVER_KEY',

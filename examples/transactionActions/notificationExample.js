@@ -5,8 +5,8 @@ const midtransClient = require('./../../index.js');
 // Please refer to this docs for sample HTTP POST notifications:
 // https://docs.midtrans.com/en/after-payment/http-notification?id=sample-of-different-payment-channels
 
-// initialize api client object
-// can find in Merchant Portal -> Settings -> Access keys
+// Initialize api client object
+// You can find it in Merchant Portal -> Settings -> Access keys
 let apiClient = new midtransClient.Snap({
     isProduction : false,
     serverKey : 'YOUR_SERVER_KEY',
