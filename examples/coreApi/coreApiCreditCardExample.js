@@ -1,7 +1,10 @@
 const midtransClient = require('./../../index.js');
 // const midtransClient = require('midtrans-client'); // use this if installed via NPM
 
-// initialize core api client object
+// This is just for very basic implementation reference, in production, you should validate the incoming requests and implement your backend more securely.
+
+// Initialize core api client object
+// You can find it in Merchant Portal -> Settings -> Access keys
 let core = new midtransClient.CoreApi({
     isProduction : false,
     serverKey : 'YOUR_SERVER_KEY',
@@ -22,10 +25,13 @@ let core = new midtransClient.CoreApi({
 // core.apiConfig.serverKey = 'YOUR_SERVER_KEY';
 // core.apiConfig.clientKey = 'YOUR_CLIENT_KEY';
 
-// IMPORTANT NOTE: You should do credit card get token via frontend using `midtrans.min.js`, to avoid card data breach risks on your backend
-// ( refer to: https://api-docs.midtrans.com )
+// IMPORTANT NOTE: You should do credit card get token via frontend using `midtrans-new-3ds.min.js`, to avoid card data breach risks on your backend
+// ( refer to: https://docs.midtrans.com/en/core-api/credit-card?id=_1-getting-the-card-token )
+// For full example on Credit Card 3DS transaction refer to:
+// (/examples/expressApp) that implement Snap & Core Api
 
-// prepare Core API parameter ( refer to: https://api-docs.midtrans.com ) minimum parameter example:
+// prepare CORE API parameter to get credit card token
+// another sample of card number can refer to https://docs.midtrans.com/en/technical-reference/sandbox-test?id=card-payments
 let parameter = {
     'card_number': '5264 2210 3887 4659',
     'card_exp_month': '12',
@@ -35,6 +41,7 @@ let parameter = {
 };
 core.cardToken(parameter)
     .then((cardTokenResponse)=>{
+        // prepare CORE API parameter to charge credit card ( refer to: https://docs.midtrans.com/en/core-api/credit-card?id=_2-sending-transaction-data-to-charge-api )
         let cardToken = cardTokenResponse.token_id;
         let parameter = {
             "payment_type": "credit_card",

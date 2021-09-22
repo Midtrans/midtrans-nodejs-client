@@ -1,7 +1,12 @@
 const midtransClient = require('./../../index.js');
 // const midtransClient = require('midtrans-client'); // use this if installed via NPM
 
-// initialize core api / snap client object
+// This is just for very basic implementation reference, in production, you should validate the incoming requests and implement your backend more securely.
+// Please refer to this docs for sample HTTP POST notifications:
+// https://docs.midtrans.com/en/after-payment/http-notification?id=sample-of-different-payment-channels
+
+// Initialize api client object
+// You can find it in Merchant Portal -> Settings -> Access keys
 let apiClient = new midtransClient.Snap({
     isProduction : false,
     serverKey : 'YOUR_SERVER_KEY',

@@ -1,5 +1,12 @@
+// This is just for very basic implementation reference, in production, you should validate the incoming requests and implement your backend more securely.
+
 const express = require('express');
 const midtransClient = require('midtrans-client');
+
+// Set Your server key
+// You can find it in Merchant Portal -> Settings -> Access keys
+const SERVER_KEY = 'SB-Mid-server-GwUP_WGbJPXsDzsNEBRs8IYA';
+const CLIENT_KEY = 'SB-Mid-client-61XuGAwQ8Bj8LxSS';
 
 // Express setup
 let app = express();
@@ -20,8 +27,8 @@ app.get('/simple_checkout', function (req, res) {
   // initialize snap client object
   let snap = new midtransClient.Snap({
     isProduction : false,
-    serverKey : 'SB-Mid-server-GwUP_WGbJPXsDzsNEBRs8IYA',
-    clientKey : 'SB-Mid-client-61XuGAwQ8Bj8LxSS'
+    serverKey : SERVER_KEY,
+    clientKey : CLIENT_KEY
   });
   let parameter = {
     "transaction_details": {
@@ -51,8 +58,8 @@ app.get('/simple_checkout', function (req, res) {
 // [0] Setup API client and config
 let core = new midtransClient.CoreApi({
   isProduction : false,
-  serverKey : 'SB-Mid-server-GwUP_WGbJPXsDzsNEBRs8IYA',
-  clientKey : 'SB-Mid-client-61XuGAwQ8Bj8LxSS'
+  serverKey : SERVER_KEY,
+  clientKey : CLIENT_KEY
 });
 
 // [1] Render HTML+JS web page to get card token_id and [3] 3DS authentication
@@ -194,8 +201,22 @@ app.get('/simple_core_api_checkout_permata', function (req, res) {
  */
 // homepage
 app.get('/', function (req, res) {
+  if (!SERVER_KEY || !CLIENT_KEY) {
+    // non-relevant function only used for demo/example purpose
+    res.send(printExampleWarningMessage());
+  }
   res.render('index');
 })
+
+function printExampleWarningMessage() {
+  message = "<code><h4>Please set your server key and client key from sandbox</h4>In file: " + __filename
+  message += "<br><br>// Set Your server key"
+  message += "<br>// You can find it in Merchant Portal -> Settings -> Access keys"
+  message += "<br>SERVER_KEY = ''"
+  message += "<br>CLIENT_KEY = ''</code>"
+  return message
+}
+
 // credit card frontend demo
 app.get('/core_api_credit_card_frontend_sample', function (req, res) {
   res.render('core_api_credit_card_frontend_sample',{ clientKey: core.apiConfig.clientKey });
