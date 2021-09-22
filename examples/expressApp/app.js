@@ -4,9 +4,9 @@ const express = require('express');
 const midtransClient = require('midtrans-client');
 
 // Set Your server key
-// can find in Merchant Portal -> Settings -> Access keys
-const SERVER_KEY = '';
-const CLIENT_KEY = '';
+// You can find it in Merchant Portal -> Settings -> Access keys
+const SERVER_KEY = 'SB-Mid-server-GwUP_WGbJPXsDzsNEBRs8IYA';
+const CLIENT_KEY = 'SB-Mid-client-61XuGAwQ8Bj8LxSS';
 
 // Express setup
 let app = express();
@@ -210,8 +210,8 @@ app.get('/', function (req, res) {
 
 function printExampleWarningMessage() {
   message = "<code><h4>Please set your server key and client key from sandbox</h4>In file: " + __filename
-  message += "<br><br># Set Your server key"
-  message += "<br># can find in Merchant Portal -> Settings -> Access keys"
+  message += "<br><br>// Set Your server key"
+  message += "<br>// You can find it in Merchant Portal -> Settings -> Access keys"
   message += "<br>SERVER_KEY = ''"
   message += "<br>CLIENT_KEY = ''</code>"
   return message
