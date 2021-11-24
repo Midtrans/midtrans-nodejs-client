@@ -314,6 +314,109 @@ The credit card charge result may contains `redirect_url` for 3DS authentication
 For full example on Credit Card 3DS transaction refer to:
 - [Express App examples](/examples/expressApp) that implement Snap & Core Api
 
+### 2.2.D Subscription API
+
+You can see some Subscription API examples [here](examples/subscription), [Subscription API Docs](https://api-docs.midtrans.com/#subscription-api)
+
+#### Subscription API for Credit Card
+
+To use subscription API for credit card, you should first obtain the 1-click saved token, [refer to this docs.](https://docs.midtrans.com/en/core-api/advanced-features?id=recurring-transaction-with-subscriptions-api)
+
+You will receive `saved_token_id` as part of the response when the initial card payment is accepted (will also available in the HTTP notification's JSON), [refer to this docs.](https://docs.midtrans.com/en/core-api/advanced-features?id=sample-3ds-authenticate-json-response-for-the-first-transaction)
+
+```javascript
+const midtransClient = require('midtrans-client');
+// Create Core API / Snap instance (both have shared `transactions` methods)
+let core = new midtransClient.CoreAPi({
+        isProduction : false,
+        serverKey : 'YOUR_SERVER_KEY',
+        clientKey : 'YOUR_CLIENT_KEY'
+    });
+// prepare parameter 
+let parameter = {
+  "name": "MONTHLY_2021",
+  "amount": "14000",
+  "currency": "IDR",
+  "payment_type": "credit_card",
+  "token": "521111gmWqMegyejqCQmmopnCFRs1117",
+  "schedule": {
+    "interval": 1,
+    "interval_unit": "month",
+    "max_interval": 12,
+    "start_time": "2021-11-25 07:25:01 +0700"
+  },
+  "metadata": {
+    "description": "Recurring payment for A"
+  },
+  "customer_details": {
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "johndoe@email.com",
+    "phone": "+62812345678"
+  }
+};
+
+core.createSubscription(parameter)
+
+// get subscription by subscriptionId
+core.getSubscription(subscriptionId)
+
+// enable subscription by subscriptionId
+core.enableSubscription(subscriptionId)
+
+// update subscription by subscriptionId and Param
+let parameter2 = {
+  "name": "MONTHLY_2021",
+  "amount": "300000",
+  "currency": "IDR",
+  "token": savedTokenId,
+  "schedule": {
+    "interval": 1
+  }
+}
+core.updateSubscription(subscriptionId, parameter2)
+```
+#### Subscription API for Gopay
+
+To use subscription API for gopay, you should first link your customer gopay account with gopay tokenization API, [refer to this section](#22e-tokenization-api)
+
+You will receive gopay payment token using `getPaymentAccount` API call
+
+You can see some Subscription API examples [here](examples/subscription)
+
+### 2.2.E Tokenization API
+You can see some Tokenization API examples [here](examples/tokenization), [Tokenization API Docs](https://api-docs.midtrans.com/#gopay-tokenization)
+
+```javascript
+const midtransClient = require('midtrans-client');
+// Create Core API / Snap instance (both have shared `transactions` methods)
+let core = new midtransClient.CoreApi({
+        isProduction : false,
+        serverKey : 'YOUR_SERVER_KEY',
+        clientKey : 'YOUR_CLIENT_KEY'
+    });
+
+// prepare parameter 
+let parameter = {
+  "payment_type": "gopay",
+  "gopay_partner": {
+    "phone_number": "81212345678",
+    "country_code": "62",
+    "redirect_url": "https://www.gojek.com"
+  }
+};
+
+// link Payment Account
+core.linkPaymentAccount(parameter)
+
+// Get payment account by account id
+core.getPaymentAccount(activeAccountId)
+
+// unlink payment account by accountId
+core.unlinkPaymentAccount(activeAccountId)
+
+```
+
 ### 2.3 Handle HTTP Notification
 
 > **IMPORTANT NOTE**: To update transaction status on your backend/database, **DO NOT** solely rely on frontend callbacks! For security reason to make sure the status is authentically coming from Midtrans, only update transaction status based on HTTP Notification or API Get Status.
