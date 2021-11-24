@@ -271,7 +271,6 @@ describe('CoreApi.js',()=> {
   })
 
   it('able to throw custom MidtransError',()=>{
-    
     let core = new CoreApi(generateConfig());
     let parameter = generateParamMin();
     parameter.transaction_details.gross_amount=0;
@@ -285,6 +284,149 @@ describe('CoreApi.js',()=> {
         expect(e.rawHttpClientData).to.have.property('data');
       })
   })
+
+    it('able to create pay account',()=>{
+        let core = new CoreApi(generateConfig());
+        let parameter = generateParamGopay();
+        return core.linkPaymentAccount(parameter)
+            .then((res)=>{
+                expect(res.status_code).to.be.equals('201');
+                expect(res.account_status).to.be.equals('PENDING');
+            })
+    })
+
+    it('able to get pay account',async () => {
+        let core = new CoreApi(generateConfig());
+        let parameter = generateParamGopay();
+        let response = await core.linkPaymentAccount(parameter)
+        let accountId = response.account_id;
+        return core.getPaymentAccount(accountId)
+            .then((res) => {
+                expect(res.status_code).to.be.equals('201');
+                expect(res.account_status).to.be.equals('PENDING');
+            })
+    })
+
+    // expected the API call will fail because of not click activation from linkPaymentAccount
+    it('able to unlink account',async () => {
+        let core = new CoreApi(generateConfig());
+        let parameter = generateParamGopay();
+        let response = await core.linkPaymentAccount(parameter)
+        let accountId = response.account_id;
+        return core.unlinkPaymentAccount(accountId)
+            .catch((e)=>{
+                expect(e.message).to.includes('412');
+                expect(e.httpStatusCode).to.equals('412');
+            })
+    })
+
+    it('fail to get pay account with dummy account',()=>{
+        let core = new CoreApi(generateConfig());
+        return core.getPaymentAccount("dummy")
+            .catch((e)=>{
+                expect(e.message).to.includes('404');
+                expect(e.httpStatusCode).to.equals('404');
+            })
+    })
+
+    it('fail to unlink pay account with dummy account',()=>{
+        let core = new CoreApi(generateConfig());
+        return core.unlinkPaymentAccount("dummy")
+            .catch((e)=>{
+                expect(e.message).to.includes('404');
+                expect(e.httpStatusCode).to.equals('404');
+            })
+    })
+
+    it('able to create subscription',()=>{
+        let core = new CoreApi(generateConfig());
+        let parameter = generateParamSubscription();
+        return core.createSubscription(parameter)
+            .then((res)=>{
+                expect(res.status).to.be.equals('active');
+            })
+    })
+
+    it('able to get subscription',async () => {
+        let core = new CoreApi(generateConfig());
+        let parameter = generateParamSubscription();
+        let response = await core.createSubscription(parameter)
+        let subscriptionId = response.id;
+        return core.getSubscription(subscriptionId)
+            .then((res) => {
+                expect(res.status).to.be.equals('active');
+            })
+    })
+
+    it('able to disable subscription',async () => {
+        let core = new CoreApi(generateConfig());
+        let parameter = generateParamSubscription();
+        let response = await core.createSubscription(parameter)
+        let subscriptionId = response.id;
+        return core.disableSubscription(subscriptionId)
+            .then((res) => {
+                expect(res.status_message).to.be.equals('Subscription is updated.');
+            })
+    })
+
+    it('able to enable subscription',async () => {
+        let core = new CoreApi(generateConfig());
+        let parameter = generateParamSubscription();
+        let response = await core.createSubscription(parameter)
+        let subscriptionId = response.id;
+        return core.enableSubscription(subscriptionId)
+            .then((res) => {
+                expect(res.status_message).to.be.equals('Subscription is updated.');
+            })
+    })
+
+    it('able to update subscription',async () => {
+        let core = new CoreApi(generateConfig());
+        let parameter = generateParamSubscription();
+        let response = await core.createSubscription(parameter)
+        let subscriptionId = response.id;
+        let parameter2 = generateParamUpdateSubscription()
+        return core.updateSubscription(subscriptionId, parameter2)
+            .then((res) => {
+                expect(res.status_message).to.be.equals('Subscription is updated.');
+            })
+    })
+
+    it('fail to get subscription with dummy account',()=>{
+        let core = new CoreApi(generateConfig());
+        return core.getSubscription("dummy")
+            .catch((e)=>{
+                expect(e.message).to.includes("Subscription doesn't exist.");
+                expect(e.httpStatusCode).to.equals(404);
+            })
+    })
+
+    it('fail to disable subscription with dummy account',()=>{
+        let core = new CoreApi(generateConfig());
+        return core.disableSubscription("dummy")
+            .catch((e)=>{
+                expect(e.message).to.includes("Subscription doesn't exist.");
+                expect(e.httpStatusCode).to.equals(404);
+            })
+    })
+
+    it('fail to enable subscription with dummy account',()=>{
+        let core = new CoreApi(generateConfig());
+        return core.enableSubscription("dummy")
+            .catch((e)=>{
+                expect(e.message).to.includes("Subscription doesn't exist.");
+                expect(e.httpStatusCode).to.equals(404);
+            })
+    })
+
+    it('fail to update subscription with dummy account',()=>{
+        let core = new CoreApi(generateConfig());
+        return core.updateSubscription("dummy")
+            .catch((e)=>{
+                expect(e.message).to.includes("Subscription doesn't exist.");
+                expect(e.httpStatusCode).to.equals(404);
+            })
+    })
 
 })
 
@@ -315,6 +457,54 @@ function generateParamMin(orderId=null){
           "bank": "bca"
       }
   }
+}
+
+function generateParamGopay(){
+    return {
+        "payment_type": "gopay",
+        "gopay_partner": {
+            "phone_number": "81212345678",
+            "country_code": "62",
+            "redirect_url": "https://mywebstore.com/gopay-linking-finish"
+        }
+    }
+}
+
+function generateParamSubscription() {
+    return {
+        "name": "MONTHLY_2021",
+        "amount": "14000",
+        "currency": "IDR",
+        "payment_type": "credit_card",
+        "token": "481111DasKBLCCXbuKfEbVlFiBZr1114",
+        "schedule": {
+            "interval": 1,
+            "interval_unit": "month",
+            "max_interval": 12,
+            "start_time": "2021-11-30 07:25:01 +0700"
+        },
+        "metadata": {
+            "description": "Recurring payment for A"
+        },
+        "customer_details": {
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "johndoe@email.com",
+            "phone": "+62812345678"
+        }
+    }
+}
+
+function generateParamUpdateSubscription() {
+    return {
+        "name": "MONTHLY_2021",
+        "amount": "300000",
+        "currency": "IDR",
+        "token": "481111DasKBLCCXbuKfEbVlFiBZr1114",
+        "schedule": {
+            "interval": 1
+        }
+    }
 }
 
 function generateCCParamMin(orderId=null,tokenId=null){
