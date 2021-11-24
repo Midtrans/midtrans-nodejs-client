@@ -47,7 +47,7 @@ describe('httpClient.js',()=> {
     let httpClient = new HttpClient();
     return httpClient.request(
       'get',
-      cons.serverKey,cons.CORE_SANDBOX_BASE_URL+'/token',
+      cons.serverKey,cons.CORE_SANDBOX_BASE_URL+'/v2/token',
       {
         'card_number': '5264 2210 3887 4659',
         'card_exp_month': '12',
