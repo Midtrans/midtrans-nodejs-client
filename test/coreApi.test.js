@@ -287,7 +287,7 @@ describe('CoreApi.js',()=> {
 
     it('able to create pay account',()=>{
         let core = new CoreApi(generateConfig());
-        let parameter = generateParamGopay();
+        let parameter = generateParamGopayToken();
         return core.linkPaymentAccount(parameter)
             .then((res)=>{
                 expect(res.status_code).to.be.equals('201');
@@ -297,7 +297,7 @@ describe('CoreApi.js',()=> {
 
     it('able to get pay account',async () => {
         let core = new CoreApi(generateConfig());
-        let parameter = generateParamGopay();
+        let parameter = generateParamGopayToken();
         let response = await core.linkPaymentAccount(parameter)
         let accountId = response.account_id;
         return core.getPaymentAccount(accountId)
@@ -308,9 +308,9 @@ describe('CoreApi.js',()=> {
     })
 
     // expected the API call will fail because of not click activation from linkPaymentAccount
-    it('able to unlink account',async () => {
+    it('able to unlink pay account',async () => {
         let core = new CoreApi(generateConfig());
-        let parameter = generateParamGopay();
+        let parameter = generateParamGopayToken();
         let response = await core.linkPaymentAccount(parameter)
         let accountId = response.account_id;
         return core.unlinkPaymentAccount(accountId)
@@ -320,7 +320,7 @@ describe('CoreApi.js',()=> {
             })
     })
 
-    it('fail to get pay account with dummy account',()=>{
+    it('fail to get pay account with dummy id',()=>{
         let core = new CoreApi(generateConfig());
         return core.getPaymentAccount("dummy")
             .catch((e)=>{
@@ -329,7 +329,7 @@ describe('CoreApi.js',()=> {
             })
     })
 
-    it('fail to unlink pay account with dummy account',()=>{
+    it('fail to unlink pay account with dummy id',()=>{
         let core = new CoreApi(generateConfig());
         return core.unlinkPaymentAccount("dummy")
             .catch((e)=>{
@@ -340,7 +340,7 @@ describe('CoreApi.js',()=> {
 
     it('able to create subscription',()=>{
         let core = new CoreApi(generateConfig());
-        let parameter = generateParamSubscription();
+        let parameter = generateParamCardSubscription();
         return core.createSubscription(parameter)
             .then((res)=>{
                 expect(res.status).to.be.equals('active');
@@ -349,7 +349,7 @@ describe('CoreApi.js',()=> {
 
     it('able to get subscription',async () => {
         let core = new CoreApi(generateConfig());
-        let parameter = generateParamSubscription();
+        let parameter = generateParamCardSubscription();
         let response = await core.createSubscription(parameter)
         let subscriptionId = response.id;
         return core.getSubscription(subscriptionId)
@@ -360,7 +360,7 @@ describe('CoreApi.js',()=> {
 
     it('able to disable subscription',async () => {
         let core = new CoreApi(generateConfig());
-        let parameter = generateParamSubscription();
+        let parameter = generateParamCardSubscription();
         let response = await core.createSubscription(parameter)
         let subscriptionId = response.id;
         return core.disableSubscription(subscriptionId)
@@ -371,18 +371,20 @@ describe('CoreApi.js',()=> {
 
     it('able to enable subscription',async () => {
         let core = new CoreApi(generateConfig());
-        let parameter = generateParamSubscription();
+        let parameter = generateParamCardSubscription();
         let response = await core.createSubscription(parameter)
         let subscriptionId = response.id;
         return core.enableSubscription(subscriptionId)
             .then((res) => {
                 expect(res.status_message).to.be.equals('Subscription is updated.');
             })
+        // disable subscription to prevent Core API continue to execute subscription
+        let disable = await core.disableSubscription(subscriptionId)
     })
 
     it('able to update subscription',async () => {
         let core = new CoreApi(generateConfig());
-        let parameter = generateParamSubscription();
+        let parameter = generateParamCardSubscription();
         let response = await core.createSubscription(parameter)
         let subscriptionId = response.id;
         let parameter2 = generateParamUpdateSubscription()
@@ -392,7 +394,7 @@ describe('CoreApi.js',()=> {
             })
     })
 
-    it('fail to get subscription with dummy account',()=>{
+    it('fail to get subscription with dummy subscription id',()=>{
         let core = new CoreApi(generateConfig());
         return core.getSubscription("dummy")
             .catch((e)=>{
@@ -401,7 +403,7 @@ describe('CoreApi.js',()=> {
             })
     })
 
-    it('fail to disable subscription with dummy account',()=>{
+    it('fail to disable subscription with dummy subscription id',()=>{
         let core = new CoreApi(generateConfig());
         return core.disableSubscription("dummy")
             .catch((e)=>{
@@ -410,7 +412,7 @@ describe('CoreApi.js',()=> {
             })
     })
 
-    it('fail to enable subscription with dummy account',()=>{
+    it('fail to enable subscription with dummy subscription id',()=>{
         let core = new CoreApi(generateConfig());
         return core.enableSubscription("dummy")
             .catch((e)=>{
@@ -419,7 +421,7 @@ describe('CoreApi.js',()=> {
             })
     })
 
-    it('fail to update subscription with dummy account',()=>{
+    it('fail to update subscription with dummy subscription id',()=>{
         let core = new CoreApi(generateConfig());
         return core.updateSubscription("dummy")
             .catch((e)=>{
@@ -459,7 +461,7 @@ function generateParamMin(orderId=null){
   }
 }
 
-function generateParamGopay(){
+function generateParamGopayToken(){
     return {
         "payment_type": "gopay",
         "gopay_partner": {
@@ -470,7 +472,7 @@ function generateParamGopay(){
     }
 }
 
-function generateParamSubscription() {
+function generateParamCardSubscription() {
     return {
         "name": "MONTHLY_2021",
         "amount": "14000",
