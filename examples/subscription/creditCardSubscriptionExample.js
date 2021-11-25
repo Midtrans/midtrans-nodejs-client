@@ -55,10 +55,10 @@ let parameter = {
 
 core.createSubscription(parameter)
     .then((Response) => {
-        console.log('Response:', JSON.stringify(Response));
+        console.log('createSubscription Response:', JSON.stringify(Response));
     })
     .catch((e) => {
-        console.log('Error occured:', e.message);
+        console.log('createSubscription Error message:', e.message);
     });
 // sample response is dictionary representation of API JSON response
 // {
@@ -96,23 +96,23 @@ let subscriptionId = "537d04c6-eef7-4c07-a65c-11c55f92c7ed"
 // get subscription by subscriptionId
 core.getSubscription(subscriptionId)
     .then((Response) => {
-        console.log('Response:', JSON.stringify(Response));
+        console.log('getSubscription Response:', JSON.stringify(Response));
     })
     .catch((e) => {
-        console.log('Error occured:', e.message);
+        console.log('getSubscription Error message:', e.message);
     });
 
 // enable subscription by subscriptionId
 core.enableSubscription(subscriptionId)
     .then((Response) => {
-        console.log('Response:', JSON.stringify(Response));
+        console.log('enableSubscription Response:', JSON.stringify(Response));
     })
     .catch((e) => {
-        console.log('Error occured:', e.message);
+        console.log('enableSubscription Error message:', e.message);
     });
 
 // update subscription by subscriptionId and Param
-let parameter2 = {
+let updateSubscriptionParam = {
     "name": "MONTHLY_2021",
     "amount": "300000",
     "currency": "IDR",
@@ -121,19 +121,19 @@ let parameter2 = {
         "interval": 1
     }
 }
-core.updateSubscription(subscriptionId, parameter2)
+core.updateSubscription(subscriptionId, updateSubscriptionParam)
     .then((Response) => {
-        console.log('Response:', JSON.stringify(Response));
+        console.log('updateSubscription Response:', JSON.stringify(Response));
     })
     .catch((e) => {
-        console.log('Error occured:', e.message);
+        console.log('updateSubscription Error message:', e.message);
     });
 
 // disable subscription by subscriptionId
 core.disableSubscription(subscriptionId)
     .then((Response) => {
-        console.log('Response:', JSON.stringify(Response));
+        console.log('disableSubscription Response:', JSON.stringify(Response));
     })
     .catch((e) => {
-        console.log('Error occured:', e.message);
+        console.log('disableSubscription Error message:', e.message);
     });
