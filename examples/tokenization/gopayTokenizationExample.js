@@ -31,7 +31,7 @@ core.linkPaymentAccount(parameter)
     });
 
 // link_payment_account_response is dictionary representation of API JSON response
-// sample:
+// sample response :
 // {
 //     "status_code": "201",
 //     "payment_type": "gopay",
@@ -67,7 +67,7 @@ core.getPaymentAccount(activeAccountId)
     .catch((e)=>{
         console.log('Error occured:',e.message);
     });
-// sample response
+// sample response :
 // {
 //     "status_code": "200",
 //     "payment_type": "gopay",
@@ -147,7 +147,7 @@ core.charge(params)
     .catch((e)=>{
         console.log('Error occured:',e.message);
     })
-// sample
+// sample response :
 // {
 //     "status_code": "200",
 //     "status_message": "Success, GoPay transaction is successful",
@@ -165,7 +165,7 @@ core.charge(params)
 
 // unlink payment account by accountId
 // when account status still PENDING, you will get status code 412
-// sample
+// sample response :
 // {
 //     "status_code": "412",
 //     "status_message": "Account status cannot be updated.",
