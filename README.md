@@ -357,15 +357,24 @@ let parameter = {
 };
 
 core.createSubscription(parameter)
+        .then((response)=>{
+          // do something to `response` object
+        });
 
 // get subscription by subscriptionId
 core.getSubscription(subscriptionId)
+        .then((response)=>{
+          // do something to `response` object
+        });
 
 // enable subscription by subscriptionId
 core.enableSubscription(subscriptionId)
+        .then((response)=>{
+          // do something to `response` object
+        });
 
-// update subscription by subscriptionId and Param
-let parameter2 = {
+// update subscription by subscriptionId and updateSubscriptionParam
+let updateSubscriptionParam = {
   "name": "MONTHLY_2021",
   "amount": "300000",
   "currency": "IDR",
@@ -374,7 +383,10 @@ let parameter2 = {
     "interval": 1
   }
 }
-core.updateSubscription(subscriptionId, parameter2)
+core.updateSubscription(subscriptionId, updateSubscriptionParam)
+        .then((response)=>{
+          // do something to `response` object
+        });
 ```
 #### Subscription API for Gopay
 
@@ -408,12 +420,21 @@ let parameter = {
 
 // link Payment Account
 core.linkPaymentAccount(parameter)
+        .then((response)=>{
+          // do something to `response` object
+        });
 
 // Get payment account by account id
 core.getPaymentAccount(activeAccountId)
+        .then((response)=>{
+          // do something to `response` object
+        });
 
 // unlink payment account by accountId
 core.unlinkPaymentAccount(activeAccountId)
+        .then((response)=>{
+          // do something to `response` object
+        });
 
 ```
 
