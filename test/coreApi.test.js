@@ -277,7 +277,7 @@ describe('CoreApi.js',()=> {
     return core.charge(parameter)
       .catch((e)=>{
         expect(e.message).to.includes('400');
-        expect(e.httpStatusCode).to.equals('400');
+        expect(e.httpStatusCode).to.equals(400);
         expect(e.ApiResponse).to.be.an('object');
         expect(e.ApiResponse.validation_messages).to.be.an('array');
         expect(e.rawHttpClientData).to.be.an('object');
