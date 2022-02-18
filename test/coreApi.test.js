@@ -277,7 +277,7 @@ describe('CoreApi.js',()=> {
     return core.charge(parameter)
       .catch((e)=>{
         expect(e.message).to.includes('400');
-        expect(e.httpStatusCode).to.equals('400');
+        expect(e.httpStatusCode).to.equals(400);
         expect(e.ApiResponse).to.be.an('object');
         expect(e.ApiResponse.validation_messages).to.be.an('array');
         expect(e.rawHttpClientData).to.be.an('object');
@@ -483,7 +483,7 @@ function generateParamCardSubscription() {
             "interval": 1,
             "interval_unit": "month",
             "max_interval": 12,
-            "start_time": "2021-11-30 07:25:01 +0700"
+            "start_time": getFormattedTime(1000 * 60 * 60 * 24 * 2) // current time +2 days
         },
         "metadata": {
             "description": "Recurring payment for A"
@@ -611,7 +611,7 @@ function generateParamMax(){
       "finish": "https://demo.midtrans.com"
     },
     "expiry": {
-      "start_time": ((new Date).getFullYear()+1)+"-12-20 18:11:08 +0700",
+      "start_time": getFormattedTime(1000 * 60 * 60 * 24), // current time +24hrs
       "unit": "minutes",
       "duration": 1
     },
@@ -619,4 +619,16 @@ function generateParamMax(){
     "custom_field2": "custom field 2 content",
     "custom_field3": "custom field 3 content"
   }
+}
+
+function getFormattedTime(offsetInMilisecond = 0) {
+  let targetDate = new Date(Date.now() + offsetInMilisecond);
+  // formatted according to API param spec
+  let formattedDateString = targetDate
+    .toISOString()
+    .split('T')
+    .join(' ')
+    .split('.')[0]
+    +' +0000';
+  return formattedDateString;
 }

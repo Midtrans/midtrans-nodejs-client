@@ -316,7 +316,7 @@ function generateParamMax(){
       "finish": "https://demo.midtrans.com"
     },
     "expiry": {
-      "start_time": ((new Date).getFullYear()+1)+"-12-20 18:11:08 +0700",
+      "start_time": getFormattedTime(1000 * 60 * 60 * 24), // current time +24hrs
       "unit": "minutes",
       "duration": 1
     },
@@ -324,4 +324,16 @@ function generateParamMax(){
     "custom_field2": "custom field 2 content",
     "custom_field3": "custom field 3 content"
   }
+}
+
+function getFormattedTime(offsetInMilisecond = 0) {
+  let targetDate = new Date(Date.now() + offsetInMilisecond);
+  // formatted according to API param spec
+  let formattedDateString = targetDate
+    .toISOString()
+    .split('T')
+    .join(' ')
+    .split('.')[0]
+    +' +0000';
+  return formattedDateString;
 }
