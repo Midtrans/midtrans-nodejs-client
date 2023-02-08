@@ -781,7 +781,7 @@ This library/package is mainly **NOT FOR FRONTEND** (Browser's javascript) usage
 - You may/will encounter **CORS issue if you are using** this to do API request **from frontend**.
 - Your API **ServerKey may also be exposed to public** if you are using this **on frontend**.
 - If what you need is to display Snap payment page on your frontend, please [follow this official documentation](https://docs.midtrans.com/en/snap/integration-guide?id=_2-displaying-snap-payment-page-on-frontend)
-    - If you are using [ReactJS follow this recommendation](https://docs.midtrans.com/en/other/faq/technical?id=my-developer-uses-react-js-frontend-framework-and-is-unable-to-use-midtransminjssnapjs-what-should-i-do).
+    - If you are using [ReactJS follow this recommendation](https://docs.midtrans.com/docs/technical-faq#my-developer-uses-react-js-frontend-framework-and-is-unable-to-use-midtransminjssnapjs-what-should-i-do).
 
 ## Get help
 
