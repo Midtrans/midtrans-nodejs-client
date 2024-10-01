@@ -6,9 +6,10 @@
 const {SnapBiConfig, SnapBi} = require("../../index");
 const { randomUUID } = require('crypto');
 
-
+/**
+ * Setup your credentials here to try the example code.
+ */
 const clientId = "Zabcdefg-MIDTRANS-CLIENT-SNAP";
-
 // Ensure to include newlines properly in the private key as shown below
 const private_key = `-----BEGIN PRIVATE KEY-----
 BCDEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7Zk6kJjqamLddaN1lK03XJW3vi5zOSA7V+5eSiYeM9tCOGouJewN/Py58wgvRh7OMAMm1IbSZpAbcZbBa1=
@@ -25,8 +26,12 @@ SnapBiConfig.snapBiChannelId = channelId;
 SnapBiConfig.snapBiClientId = clientId
 SnapBiConfig.enableLogging = true;
 
-
 const externalId = randomUUID();
+
+let additionalHeader = {
+    "X-device-id": "your device id",
+    "debug-id": "your debug id"
+}
 
 let qrisRequestBody = {
     "partnerReferenceNo": externalId,
@@ -62,12 +67,41 @@ let qrisRequestBody = {
         "locale": "id_ID"
     }
 }
+/**
+ * Example code for Qris using Snap Bi.
+ * Below are example code to create payment.
+ */
+
+/**
+ *  Basic example
+ */
 SnapBi.qris()
     .withBody(qrisRequestBody)
     .createPayment(externalId)
     .then(r =>
-    console.log(JSON.stringify(r, null, 2))
+    console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
 )
+/**
+ * Example of using existing access token to create payment
+ */
+SnapBi.qris()
+    .withBody(qrisRequestBody)
+    .withAccessToken("your access token")
+    .createPayment(externalId)
+    .then(r =>
+        console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+    )
+/**
+ * Adding custom header during both access token & transaction process request by using .withAccessTokenHeader() .withTransactionHeader()
+ */
+SnapBi.qris()
+    .withBody(qrisRequestBody)
+    .withAccessTokenHeader(additionalHeader)
+    .withTransactionHeader(additionalHeader)
+    .createPayment(externalId)
+    .then(r =>
+        console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+    )
 
 
 
