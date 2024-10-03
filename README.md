@@ -761,8 +761,485 @@ iris.createBeneficiaries({
    */
   validateBankAccount(parameter={})
 ```
-
 You can also refer to [Iris test cases](/test/iris.test.js) for sample usage for now. Dedicated sample usage might be written later in the future.
+
+## 6. Snap-BI (*NEW FEATURE starting v1.4.0)
+Standar Nasional Open API Pembayaran, or in short SNAP, is a national payment open API standard published by Bank Indonesia. To learn more you can read this [docs](https://docs.midtrans.com/reference/core-api-snap-open-api-overview)
+
+### 6.1 General Settings
+
+```javascript
+//These config value are based on the header stated here https://docs.midtrans.com/reference/getting-started-1
+// Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
+SnapBiConfig.isProduction = true
+// Set your client id. Merchant’s client ID that will be given by Midtrans, will be used as X-CLIENT-KEY on request’s header in B2B Access Token API.
+SnapBiConfig.snapBiClientId = "your client id"
+// Set your private key here, make sure to add \n on the private key, you can refer to the examples
+SnapBiConfig.snapBiPrivateKey = "your private key";
+// Set your client secret. Merchant’s secret key that will be given by Midtrans, will be used for symmetric signature generation for Transactional API’s header.
+SnapBiConfig.snapBiClientSecret = "your client secret";
+// Set your partner id. Merchant’s partner ID that will be given by Midtrans, will be used as X-PARTNER-ID on Transactional API’s header.
+SnapBiConfig.snapBiPartnerId = "your partner id";
+// Set the channel id here.
+SnapBiConfig.snapBiChannelId = "your channel id";
+// Enable logging to see details of the request/response make sure to disable this on production, the default is disabled.
+SnapBiConfig.enableLogging = true;
+```
+
+### 6.2 Create Payment
+
+#### 6.2.1 Direct Debit (Gopay, Dana, Shopeepay)
+Refer to this [docs](https://docs.midtrans.com/reference/direct-debit-api-gopay) for more detailed information about creating payment using direct debit.
+
+```javascript
+
+const externalId = randomUUID();
+let directDebiRequestBody = {
+  "partnerReferenceNo": externalId,
+  "chargeToken": "",
+  "merchantId": merchantId,
+  "urlParam": {
+    "url": "https://midtrans-test.com/api/notification",
+    "type": "PAY_RETURN",
+    "isDeeplink": "N"
+  },
+  "validUpTo": "2030-07-20T20:34:15.452305Z",
+  "payOptionDetails": [
+    {
+      "payMethod": "GOPAY",
+      "payOption": "GOPAY_WALLET",
+      "transAmount": {
+        "value": "1500",
+        "currency": "IDR"
+      }
+    }
+  ],
+  "additionalInfo": {
+    "customerDetails": {
+      "firstName": "Merchant",
+      "lastName": "Operation",
+      "email": "merchant-ops@midtrans.com",
+      "phone": "+6281932358123",
+      "billingAddress": {
+        "firstName": "Merchant",
+        "lastName": "Operation",
+        "phone": "+6281932358123",
+        "address": "Pasaraya Blok M",
+        "city": "Jakarta",
+        "postalCode": "12160",
+        "countryCode": "IDN"
+      },
+      "shippingAddress": {
+        "firstName": "Merchant",
+        "lastName": "Operation",
+        "phone": "+6281932358123",
+        "address": "Pasaraya Blok M",
+        "city": "Jakarta",
+        "postalCode": "12160",
+        "countryCode": "IDN"
+      }
+    },
+    "items": [
+      {
+        "id": "8143fc4f-ec05-4c55-92fb-620c212f401e",
+        "price": {
+          "value": "1500.00",
+          "currency": "IDR"
+        },
+        "quantity": 1,
+        "name": "test item name",
+        "brand": "test item brand",
+        "category": "test item category",
+        "merchantName": "Merchant Operation"
+      }
+    ]
+  }
+}
+/**
+ *  Basic example
+ * to change the payment method, you can change the value of the request body on the `payOptionDetails`
+ * the `currency` value that we support for now is only `IDR`
+ */
+SnapBi.directDebit()
+        .withBody(directDebiRequestBody)
+        .createPayment(externalId)
+        .then(r =>
+                console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+        )
+
+```
+#### 6.2.2 VA (Bank Transfer)
+Refer to this [docs](https://docs.midtrans.com/reference/virtual-account-api-bank-transfer) for more detailed information about VA/Bank Transfer.
+```javascript
+
+const externalId = randomUUID();
+let vaRequestBody = {
+  "partnerServiceId": "    1234",
+  "customerNo": "0000000000",
+  "virtualAccountNo": "    12340000000000",
+  "virtualAccountName": "Merchant Operation",
+  "virtualAccountEmail": "merchant-ops@midtrans.com",
+  "virtualAccountPhone": "6281932358123",
+  "trxId": externalId,
+  "totalAmount": {
+    "value": "1500.00",
+    "currency": "IDR"
+  },
+  "expiredDate": "2030-07-20T20:50:04Z",
+  "additionalInfo": {
+    "merchantId": merchantId,
+    "bank": "bca",
+    "flags": {
+      "shouldRandomizeVaNumber": true
+    },
+    "customerDetails": {
+      "firstName": "Merchant",
+      "lastName": "Operation",
+      "email": "merchant-ops@midtrans.com",
+      "phone": "+6281932358123",
+      "billingAddress": {
+        "firstName": "Merchant",
+        "lastName": "Operation",
+        "phone": "+6281932358123",
+        "address": "Pasaraya Blok M",
+        "city": "Jakarta",
+        "postalCode": "12160",
+        "countryCode": "IDN"
+      },
+      "shippingAddress": {
+        "firstName": "Merchant",
+        "lastName": "Operation",
+        "phone": "+6281932358123",
+        "address": "Pasaraya Blok M",
+        "city": "Jakarta",
+        "postalCode": "12160",
+        "countryCode": "IDN"
+      }
+    },
+    "items": [
+      {
+        "id": "8143fc4f-ec05-4c55-92fb-620c212f401e",
+        "price": {
+          "value": "1500.00",
+          "currency": "IDR"
+        },
+        "quantity": 1,
+        "name": "test item name",
+        "brand": "test item brand",
+        "category": "test item category",
+        "merchantName": "Merchant Operation"
+      }
+    ]
+  }
+}
+
+
+/**
+ * basic implementation to create payment using va
+ */
+SnapBi.va()
+        .withBody(vaRequestBody)
+        .createPayment(externalId)
+        .then(r =>
+                console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+        )
+```
+#### 6.2.3 Qris
+Refer to this [docs](https://docs.midtrans.com/reference/mpm-api-qris) for more detailed information about Qris.
+```javascript
+const externalId = randomUUID();
+
+let additionalHeader = {
+  "X-device-id": "your device id",
+  "debug-id": "your debug id"
+}
+
+let qrisRequestBody = {
+  "partnerReferenceNo": externalId,
+  "merchantId": merchantId,
+  "amount": {
+    "value": "1500.00",
+    "currency": "IDR"
+  },
+  "validityPeriod": "2030-07-03T12:08:56-07:00",
+  "additionalInfo": {
+    "acquirer": "gopay",
+    "customerDetails": {
+      "firstName": "Merchant",
+      "lastName": "Operation",
+      "email": "merchant-ops@midtrans.com",
+      "phone": "+6281932358123"
+    },
+    "items": [
+      {
+        "id": "8143fc4f-ec05-4c55-92fb-620c212f401e",
+        "price": {
+          "value": "1500.00",
+          "currency": "IDR"
+        },
+        "quantity": 1,
+        "name": "test item name",
+        "brand": "test item brand",
+        "category": "test item category",
+        "merchantName": "Merchant Operation"
+      }
+    ],
+    "countryCode": "ID",
+    "locale": "id_ID"
+  }
+}
+
+/**
+ * basic implementation to create payment using Qris
+ */
+SnapBi.qris()
+        .withBody(qrisRequestBody)
+        .createPayment(externalId)
+        .then(r =>
+                console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+        )
+```
+
+### 6.4 Get Transaction Status
+Refer to this [docs](https://docs.midtrans.com/reference/get-transaction-status-api) for more detailed information about getting the transaction status.
+```javascript
+let directDebitStatusBodyByExternalId = {
+  "originalExternalId": "67fd4d9e-5fe6-477c-ab99-026a9ab88c34",
+  "serviceCode": "54"
+}
+let directDebitStatusBodyByReferenceNo = {
+  "originalReferenceNo": "A120240930071006pW0gbFMTguID",
+  "serviceCode": "54"
+}
+
+let vaStatusBody = {
+  "partnerServiceId": "    1234",
+  "customerNo": "356899",
+  "virtualAccountNo": "    1234356899",
+  "inquiryRequestId": "5a5597d1-615d-4df0-875d-aa429b2b1b68",
+  "additionalInfo": {
+    "merchantId": merchantId
+  }
+}
+
+let qrisStatusBody = {
+  "originalReferenceNo": "A120240930074508BIDP4QaNnJID",
+  "originalPartnerReferenceNo": "b7d2bc2e-9d5b-4cec-a39f-4244c11e1b98",
+  "merchantId": merchantId,
+  "serviceCode": "47"
+}
+
+/**
+ * Example code for Direct Debit getStatus using externalId
+ */
+SnapBi.directDebit()
+        .withBody(directDebitStatusBodyByExternalId)
+        .getStatus(externalId)
+        .then(r =>
+                console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+        )
+
+/**
+ * Example code for Direct Debit getStatus using referenceNo
+ */
+SnapBi.directDebit()
+        .withBody(directDebitStatusBodyByReferenceNo)
+        .getStatus(externalId)
+        .then(r =>
+                console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+        )
+    
+/**
+ * Example code for VA (Bank Transfer) getStatus
+ */
+SnapBi.va()
+        .withBody(vaStatusBody)
+        .getStatus(externalId)
+        .then(r =>
+                console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+        )
+/**
+ * 
+ * Example code for Qris getStatus
+ */
+SnapBi.qris()
+        .withBody(qrisStatusBody)
+        .getStatus(externalId)
+        .then(r =>
+                console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+        )
+
+```
+
+### 6.5 Cancel Transaction
+Refer to this [docs](https://docs.midtrans.com/reference/cancel-api) for more detailed information about cancelling the payment.
+
+```javascript
+const externalId = randomUUID();
+
+let directDebitCancelByReferenceNoBody = {
+  "originalReferenceNo" : "A120240930075800vyWwxohb5WID"
+}
+
+let directDebitCancelByExternalIdBody = {
+  "originalExternalId" : "8a074fc8-4eac-4b06-959a-95aeb91c7920"
+}
+
+let vaCancelBody = {
+  "partnerServiceId": "    1234",
+  "customerNo": "564902",
+  "virtualAccountNo": "    1234564902",
+  "trxId": "18f2bd6d-e1be-43e2-89e4-8f9088251f60",
+  "additionalInfo": {
+    "merchantId": merchantId
+  }
+}
+
+let qrisCancelBody = {
+  "originalReferenceNo": "A120240930075936LUOBMHxvPOID",
+  "merchantId": merchantId,
+  "reason": "cancel reason"
+}
+/**
+ * Basic implementation to cancel transaction using referenceNo
+ */
+SnapBi.directDebit()
+        .withBody(directDebitCancelByReferenceNoBody)
+        .cancel(externalId)
+        .then(r =>
+                console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+        )
+
+/**
+ * Basic implementation to cancel transaction using externalId
+ */
+SnapBi.directDebit()
+        .withBody(directDebitCancelByExternalIdBody)
+        .cancel(externalId)
+        .then(r =>
+                console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+        )
+
+/**
+ * Basic implementation of VA (Bank Transfer) to cancel transaction
+ */
+SnapBi.va()
+        .withBody(vaCancelBody)
+        .cancel(externalId)
+        .then(r =>
+                console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+        )
+
+/**
+ * Basic implementation of Qris to cancel transaction
+ */
+SnapBi.qris()
+        .withBody(qrisCancelBody)
+        .cancel(externalId)
+        .then(r =>
+                console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+        )
+
+```
+
+### 6.6 Refund Transaction
+Refer to this [docs](https://docs.midtrans.com/reference/refund-api) for more detailed information about refunding the payment.
+
+```javascript
+ let directDebitRefundBody = {
+  "originalReferenceNo": "A1202409300808041pswnOt7wMID",
+  "reason" : "refund reason"
+}
+
+let qrisRefundBody = {
+  "merchantId": merchantId,
+  "originalPartnerReferenceNo": "488fd30e-64d7-4236-9e7a-82d55d9efad3",
+  "originalReferenceNo": "A1202409300907114b5RZRNSRuID",
+  "partnerRefundNo": "is-refund-12345",
+  "reason": "refund reason",
+  "refundAmount": {
+    "value": "100.00",
+    "currency": "IDR"
+  },
+  "additionalInfo": {
+    "foo": "bar"
+  }
+}
+/**
+ * Example code for refund using Direct Debit
+ */
+SnapBi.directDebit()
+        .withBody(directDebitRefundBody)
+        .refund(externalId)
+        .then(r =>
+                console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+        )
+
+/**
+ * Example code for refund using Qris
+ */
+SnapBi.qris()
+        .withBody(qrisRefundBody)
+        .refund(externalId)
+        .then(r =>
+                console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+        )
+```
+
+### 6.7 Adding additional header / override the header
+
+You can add or override the header value, by utilizing the `withAccessTokenHeader` or `withTransactionHeader` method chain.
+Refer to this [docs](https://docs.midtrans.com/reference/core-api-snap-open-api-overview) to see the header value required by Snap-Bi , and see the default header on each payment method
+
+```javascript
+let additionalHeader = {
+  "X-device-id": "your device id",
+  "debug-id": "your debug id"
+}
+ /**
+ * Example code for Direct Debit payment using additional header
+ */
+ SnapBi.directDebit()
+         .withBody(directDebiRequestBody)
+         .withAccessTokenHeader(additionalHeader)
+         .withTransactionHeader(additionalHeader)
+         .createPayment(externalId)
+         .then(r =>
+                 console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+         )
+/**
+ * Example code for using additional header on creating payment using VA
+ */
+SnapBi.va()
+        .withBody(vaRequestBody)
+        .withAccessTokenHeader(additionalHeader)
+        .withTransactionHeader(additionalHeader)
+        .createPayment(externalId)
+        .then(r =>
+                console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+        )
+```
+
+### 6.8 Reusing Access Token
+
+If you've saved your previous access token and wanted to re-use it, you can do it by utilizing the `.withAccessToken()`.
+
+```javascript
+/**
+ * Example reusing your existing accessToken by using .withAccessToken()
+ */
+SnapBi.directDebit()
+        .withBody(directDebiRequestBody)
+        .withAccessToken("your access token")
+        .createPayment(externalId)
+        .then(r =>
+                console.log("Snap Bi result: " + JSON.stringify(r, null, 2))
+        )
+
+```
+
+### 6.9 Payment Notification
+To implement Snap-Bi Payment Notification you can refer to this [docs](https://docs.midtrans.com/reference/payment-notification-api)
 
 ## Examples
 Examples are available on [/examples](/examples) folder.
@@ -770,6 +1247,7 @@ There are:
 - [Core Api examples](/examples/coreApi)
 - [Snap examples](/examples/snap)
 - [Express App examples](/examples/expressApp) that implement Snap & Core Api
+- [Snap Bi examples](/examples/snapBi)
 
 <!-- @TODO: document ## 5. IRIS -->
 
