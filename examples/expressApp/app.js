@@ -2,6 +2,7 @@
 
 const express = require('express');
 const midtransClient = require('midtrans-client');
+const {SnapBiConfig, SnapBi} = require("../../index");
 
 // Set Your server key
 // You can find it in Merchant Portal -> Settings -> Access keys
@@ -216,6 +217,34 @@ function printExampleWarningMessage() {
   message += "<br>CLIENT_KEY = ''</code>"
   return message
 }
+
+app.post('/webhook/*', (req, res) => {
+    const payload = req.body;
+    const signature = req.headers['x-signature'] || 'N/A';
+    const timestamp = req.headers['x-timestamp'] || 'N/A';
+    const publicKeyString = `-----BEGIN PUBLIC KEY-----
+ACBDefghijkklmn/fboOoctcthr8aJ5AOEpCFLrsCSgAtmtcHxBHq9miZyHFf4juNBpvvRrVlCLzyhNOkjKDNj9PO/MZabcdefGHIJKLMN
+-----END PUBLIC KEY-----`;
+    const notificationUrlPath = `/${req.params[0]}`;
+
+    SnapBiConfig.snapBiPublicKey = publicKeyString
+
+    let isVerified = SnapBi.notification()
+        .withNotificationPayload(payload)
+        .withSignature(signature)
+        .withTimeStamp(timestamp)
+        .withNotificationUrlPath(notificationUrlPath)
+        .isWebhookNotificationVerified()
+
+    res.status(200).json({
+        message: 'Webhook received',
+        signature: signature,
+        timestamp: timestamp,
+        isVerified: isVerified,
+        payload : payload,
+        payloadJsonStringify: JSON.stringify(payload)
+    });
+});
 
 // credit card frontend demo
 app.get('/core_api_credit_card_frontend_sample', function (req, res) {
