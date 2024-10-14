@@ -1240,7 +1240,31 @@ SnapBi.directDebit()
 
 ### 6.9 Payment Notification
 To implement Snap-Bi Payment Notification you can refer to this [docs](https://docs.midtrans.com/reference/payment-notification-api)
+To verify the webhook notification that you receive you can use this method below
+```javascript
+ 
+// The request body/ payload sent by the webhook
+// Sample notification body, replace with actual data you receive from Midtrans
+let notificationPayload = "{\"originalPartnerReferenceNo\":\"GP24043015193402809\",\"originalReferenceNo\":\"A120240430081940S9vu8gSjaRID\",\"merchantId\":\"G099333790\",\"amount\":{\"value\":\"102800.00\",\"currency\":\"IDR\"},\"latestTransactionStatus\":\"00\",\"transactionStatusDesc\":\"SUCCESS\",\"additionalInfo\":{\"refundHistory\":[]}}";
 
+// To get the signature value, you need to retrieve it from the webhook header called X-Signature
+let signature = "CgjmAyC9OZ3pB2JhBRDihL939kS86LjP1VLD1R7LgI4JkvYvskUQrPXgjhrZqU2SFkfPmLtSbcEUw21pg2nItQ0KoX582Y6Tqg4Mn45BQbxo4LTPzkZwclD4WI+aCYePQtUrXpJSTM8D32lSJQQndlloJfzoD6Rh24lNb+zjUpc+YEi4vMM6MBmS26PpCm/7FZ7/OgsVh9rlSNUsuQ/1QFpldA0F8bBNWSW4trwv9bE1NFDzliHrRAnQXrT/J3chOg5qqH0+s3E6v/W21hIrBYZVDTppyJPtTOoCWeuT1Tk9XI2HhSDiSuI3pevzLL8FLEWY/G4M5zkjm/9056LTDw==";
+
+// To get the timeStamp value, you need to retrieve it from the webhook header called X-Timestamp
+let timeStamp = "2024-10-07T15:45:22+07:00";
+
+// The url path is based on the webhook url of the payment method for example for direct debit is `/v1.0/debit/notify`
+let notificationUrlPath = "/v1.0/debit/notify";
+/**
+ * Example verifying the webhook notification
+ */
+let isVerified = SnapBi.notification()
+        .withNotificationPayload(notificationPayload)
+        .withSignature(signature)
+        .withTimeStamp(timeStamp)
+        .withNotificationUrlPath(notificationUrlPath)
+        .isWebhookNotificationVerified()
+```
 ## Examples
 Examples are available on [/examples](/examples) folder.
 There are:
