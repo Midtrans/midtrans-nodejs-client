@@ -769,21 +769,23 @@ Standar Nasional Open API Pembayaran, or in short SNAP, is a national payment op
 ### 6.1 General Settings
 
 ```javascript
+const midtransClient = require('midtrans-client'); // use this if installed via NPM
+
 //These config value are based on the header stated here https://docs.midtrans.com/reference/getting-started-1
 // Set to Development/Sandbox Environment (default). Set to true for Production Environment (accept real transaction).
-SnapBiConfig.isProduction = true
+midtransClient.SnapBiConfig.isProduction = true
 // Set your client id. Merchant’s client ID that will be given by Midtrans, will be used as X-CLIENT-KEY on request’s header in B2B Access Token API.
-SnapBiConfig.snapBiClientId = "your client id"
+midtransClient.SnapBiConfig.snapBiClientId = "your client id"
 // Set your private key here, make sure to add \n on the private key, you can refer to the examples
-SnapBiConfig.snapBiPrivateKey = "your private key";
+midtransClient.SnapBiConfig.snapBiPrivateKey = "your private key";
 // Set your client secret. Merchant’s secret key that will be given by Midtrans, will be used for symmetric signature generation for Transactional API’s header.
-SnapBiConfig.snapBiClientSecret = "your client secret";
+midtransClient.SnapBiConfig.snapBiClientSecret = "your client secret";
 // Set your partner id. Merchant’s partner ID that will be given by Midtrans, will be used as X-PARTNER-ID on Transactional API’s header.
-SnapBiConfig.snapBiPartnerId = "your partner id";
+midtransClient.SnapBiConfig.snapBiPartnerId = "your partner id";
 // Set the channel id here.
-SnapBiConfig.snapBiChannelId = "your channel id";
+midtransClient.SnapBiConfig.snapBiChannelId = "your channel id";
 // Enable logging to see details of the request/response make sure to disable this on production, the default is disabled.
-SnapBiConfig.enableLogging = true;
+midtransClient.SnapBiConfig.enableLogging = true;
 ```
 
 ### 6.2 Create Payment
@@ -792,6 +794,7 @@ SnapBiConfig.enableLogging = true;
 Refer to this [docs](https://docs.midtrans.com/reference/direct-debit-api-gopay) for more detailed information about creating payment using direct debit.
 
 ```javascript
+const midtransClient = require('midtrans-client'); // use this if installed via NPM
 
 const externalId = randomUUID();
 let directDebiRequestBody = {
@@ -860,7 +863,7 @@ let directDebiRequestBody = {
  * to change the payment method, you can change the value of the request body on the `payOptionDetails`
  * the `currency` value that we support for now is only `IDR`
  */
-SnapBi.directDebit()
+midtransClient.SnapBi.directDebit()
         .withBody(directDebiRequestBody)
         .createPayment(externalId)
         .then(r =>
@@ -871,6 +874,7 @@ SnapBi.directDebit()
 #### 6.2.2 VA (Bank Transfer)
 Refer to this [docs](https://docs.midtrans.com/reference/virtual-account-api-bank-transfer) for more detailed information about VA/Bank Transfer.
 ```javascript
+const midtransClient = require('midtrans-client'); // use this if installed via NPM
 
 const externalId = randomUUID();
 let vaRequestBody = {
@@ -937,7 +941,7 @@ let vaRequestBody = {
 /**
  * basic implementation to create payment using va
  */
-SnapBi.va()
+midtransClient.SnapBi.va()
         .withBody(vaRequestBody)
         .createPayment(externalId)
         .then(r =>
@@ -947,6 +951,8 @@ SnapBi.va()
 #### 6.2.3 Qris
 Refer to this [docs](https://docs.midtrans.com/reference/mpm-api-qris) for more detailed information about Qris.
 ```javascript
+const midtransClient = require('midtrans-client'); // use this if installed via NPM
+
 const externalId = randomUUID();
 
 let additionalHeader = {
@@ -992,7 +998,7 @@ let qrisRequestBody = {
 /**
  * basic implementation to create payment using Qris
  */
-SnapBi.qris()
+midtransClient.SnapBi.qris()
         .withBody(qrisRequestBody)
         .createPayment(externalId)
         .then(r =>
@@ -1003,6 +1009,8 @@ SnapBi.qris()
 ### 6.4 Get Transaction Status
 Refer to this [docs](https://docs.midtrans.com/reference/get-transaction-status-api) for more detailed information about getting the transaction status.
 ```javascript
+const midtransClient = require('midtrans-client'); // use this if installed via NPM
+
 let directDebitStatusBodyByExternalId = {
   "originalExternalId": "67fd4d9e-5fe6-477c-ab99-026a9ab88c34",
   "serviceCode": "54"
@@ -1032,7 +1040,7 @@ let qrisStatusBody = {
 /**
  * Example code for Direct Debit getStatus using externalId
  */
-SnapBi.directDebit()
+midtransClient.SnapBi.directDebit()
         .withBody(directDebitStatusBodyByExternalId)
         .getStatus(externalId)
         .then(r =>
@@ -1042,7 +1050,7 @@ SnapBi.directDebit()
 /**
  * Example code for Direct Debit getStatus using referenceNo
  */
-SnapBi.directDebit()
+midtransClient.SnapBi.directDebit()
         .withBody(directDebitStatusBodyByReferenceNo)
         .getStatus(externalId)
         .then(r =>
@@ -1052,7 +1060,7 @@ SnapBi.directDebit()
 /**
  * Example code for VA (Bank Transfer) getStatus
  */
-SnapBi.va()
+midtransClient.SnapBi.va()
         .withBody(vaStatusBody)
         .getStatus(externalId)
         .then(r =>
@@ -1062,7 +1070,7 @@ SnapBi.va()
  * 
  * Example code for Qris getStatus
  */
-SnapBi.qris()
+midtransClient.SnapBi.qris()
         .withBody(qrisStatusBody)
         .getStatus(externalId)
         .then(r =>
@@ -1075,6 +1083,8 @@ SnapBi.qris()
 Refer to this [docs](https://docs.midtrans.com/reference/cancel-api) for more detailed information about cancelling the payment.
 
 ```javascript
+const midtransClient = require('midtrans-client'); // use this if installed via NPM
+
 const externalId = randomUUID();
 
 let directDebitCancelByReferenceNoBody = {
@@ -1103,7 +1113,7 @@ let qrisCancelBody = {
 /**
  * Basic implementation to cancel transaction using referenceNo
  */
-SnapBi.directDebit()
+midtransClient.SnapBi.directDebit()
         .withBody(directDebitCancelByReferenceNoBody)
         .cancel(externalId)
         .then(r =>
@@ -1113,7 +1123,7 @@ SnapBi.directDebit()
 /**
  * Basic implementation to cancel transaction using externalId
  */
-SnapBi.directDebit()
+midtransClient.SnapBi.directDebit()
         .withBody(directDebitCancelByExternalIdBody)
         .cancel(externalId)
         .then(r =>
@@ -1123,7 +1133,7 @@ SnapBi.directDebit()
 /**
  * Basic implementation of VA (Bank Transfer) to cancel transaction
  */
-SnapBi.va()
+midtransClient.SnapBi.va()
         .withBody(vaCancelBody)
         .cancel(externalId)
         .then(r =>
@@ -1133,7 +1143,7 @@ SnapBi.va()
 /**
  * Basic implementation of Qris to cancel transaction
  */
-SnapBi.qris()
+midtransClient.SnapBi.qris()
         .withBody(qrisCancelBody)
         .cancel(externalId)
         .then(r =>
@@ -1146,6 +1156,8 @@ SnapBi.qris()
 Refer to this [docs](https://docs.midtrans.com/reference/refund-api) for more detailed information about refunding the payment.
 
 ```javascript
+const midtransClient = require('midtrans-client'); // use this if installed via NPM
+
  let directDebitRefundBody = {
   "originalReferenceNo": "A1202409300808041pswnOt7wMID",
   "reason" : "refund reason"
@@ -1168,7 +1180,7 @@ let qrisRefundBody = {
 /**
  * Example code for refund using Direct Debit
  */
-SnapBi.directDebit()
+midtransClient.SnapBi.directDebit()
         .withBody(directDebitRefundBody)
         .refund(externalId)
         .then(r =>
@@ -1178,7 +1190,7 @@ SnapBi.directDebit()
 /**
  * Example code for refund using Qris
  */
-SnapBi.qris()
+midtransClient.SnapBi.qris()
         .withBody(qrisRefundBody)
         .refund(externalId)
         .then(r =>
@@ -1192,6 +1204,8 @@ You can add or override the header value, by utilizing the `withAccessTokenHeade
 Refer to this [docs](https://docs.midtrans.com/reference/core-api-snap-open-api-overview) to see the header value required by Snap-Bi , and see the default header on each payment method
 
 ```javascript
+const midtransClient = require('midtrans-client'); // use this if installed via NPM
+
 let additionalHeader = {
   "X-device-id": "your device id",
   "debug-id": "your debug id"
@@ -1199,7 +1213,7 @@ let additionalHeader = {
  /**
  * Example code for Direct Debit payment using additional header
  */
- SnapBi.directDebit()
+ midtransClient.SnapBi.directDebit()
          .withBody(directDebiRequestBody)
          .withAccessTokenHeader(additionalHeader)
          .withTransactionHeader(additionalHeader)
@@ -1210,7 +1224,7 @@ let additionalHeader = {
 /**
  * Example code for using additional header on creating payment using VA
  */
-SnapBi.va()
+midtransClient.SnapBi.va()
         .withBody(vaRequestBody)
         .withAccessTokenHeader(additionalHeader)
         .withTransactionHeader(additionalHeader)
@@ -1225,10 +1239,11 @@ SnapBi.va()
 If you've saved your previous access token and wanted to re-use it, you can do it by utilizing the `.withAccessToken()`.
 
 ```javascript
+const midtransClient = require('midtrans-client'); // use this if installed via NPM
 /**
  * Example reusing your existing accessToken by using .withAccessToken()
  */
-SnapBi.directDebit()
+midtransClient.SnapBi.directDebit()
         .withBody(directDebiRequestBody)
         .withAccessToken("your access token")
         .createPayment(externalId)
@@ -1242,7 +1257,8 @@ SnapBi.directDebit()
 To implement Snap-Bi Payment Notification you can refer to this [docs](https://docs.midtrans.com/reference/payment-notification-api)
 To verify the webhook notification that you receive you can use this method below
 ```javascript
- 
+ const midtransClient = require('midtrans-client'); // use this if installed via NPM
+
 // The request body/ payload sent by the webhook
 // Sample notification body, replace with actual data you receive from Midtrans
 let notificationPayload = "{\"originalPartnerReferenceNo\":\"GP24043015193402809\",\"originalReferenceNo\":\"A120240430081940S9vu8gSjaRID\",\"merchantId\":\"G099333790\",\"amount\":{\"value\":\"102800.00\",\"currency\":\"IDR\"},\"latestTransactionStatus\":\"00\",\"transactionStatusDesc\":\"SUCCESS\",\"additionalInfo\":{\"refundHistory\":[]}}";
@@ -1258,7 +1274,7 @@ let notificationUrlPath = "/v1.0/debit/notify";
 /**
  * Example verifying the webhook notification
  */
-let isVerified = SnapBi.notification()
+let isVerified = midtransClient.SnapBi.notification()
         .withNotificationPayload(notificationPayload)
         .withSignature(signature)
         .withTimeStamp(timeStamp)
@@ -1270,8 +1286,8 @@ Examples are available on [/examples](/examples) folder.
 There are:
 - [Core Api examples](/examples/coreApi)
 - [Snap examples](/examples/snap)
-- [Express App examples](/examples/expressApp) that implement Snap & Core Api
-- [Snap Bi examples](/examples/snapBi)
+- [Express App examples](/examples/expressApp) that implement Snap, Core Api & SnapBi
+- [Snap Bi examples](/examples/expressApp/SnapBi)
 
 <!-- @TODO: document ## 5. IRIS -->
 

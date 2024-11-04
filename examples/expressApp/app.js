@@ -2,7 +2,6 @@
 
 const express = require('express');
 const midtransClient = require('midtrans-client');
-const {SnapBiConfig, SnapBi} = require("../../index");
 
 // Set Your server key
 // You can find it in Merchant Portal -> Settings -> Access keys
@@ -227,9 +226,8 @@ ACBDefghijkklmn/fboOoctcthr8aJ5AOEpCFLrsCSgAtmtcHxBHq9miZyHFf4juNBpvvRrVlCLzyhNO
 -----END PUBLIC KEY-----`;
     const notificationUrlPath = `/${req.params[0]}`;
 
-    SnapBiConfig.snapBiPublicKey = publicKeyString
-
-    let isVerified = SnapBi.notification()
+    midtransClient.SnapBiConfig.snapBiPublicKey = publicKeyString
+    let isVerified = midtransClient.SnapBi.notification()
         .withNotificationPayload(payload)
         .withSignature(signature)
         .withTimeStamp(timestamp)
