@@ -763,7 +763,7 @@ iris.createBeneficiaries({
 ```
 You can also refer to [Iris test cases](/test/iris.test.js) for sample usage for now. Dedicated sample usage might be written later in the future.
 
-## 6. Snap-BI (*NEW FEATURE starting v1.4.0)
+## 6. Snap-BI (*NEW FEATURE starting v1.4.2)
 Standar Nasional Open API Pembayaran, or in short SNAP, is a national payment open API standard published by Bank Indonesia. To learn more you can read this [docs](https://docs.midtrans.com/reference/core-api-snap-open-api-overview)
 
 ### 6.1 General Settings
