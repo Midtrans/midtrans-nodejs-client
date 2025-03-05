@@ -5,11 +5,11 @@ const MidtransError = require('./lib/midtransError');
 const SnapBiConfig = require('./lib/snapBi/snapBiConfig');
 const SnapBi = require('./lib/snapBi/snapBi');
 const Midtrans = {
-	Snap,
-	CoreApi,
-	Iris,
-	MidtransError,
-	SnapBiConfig,
-	SnapBi
+  Snap,
+  CoreApi,
+  Iris,
+  MidtransError,
+  SnapBiConfig,
+  SnapBi,
 };
 module.exports = Midtrans;

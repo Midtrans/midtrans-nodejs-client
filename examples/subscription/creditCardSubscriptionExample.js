@@ -6,9 +6,9 @@ const midtransClient = require('../../index.js');
 // Initialize core api client object
 // You can find it in Merchant Portal -> Settings -> Access keys
 let core = new midtransClient.CoreApi({
-    isProduction: false,
-    serverKey : 'YOUR_SERVER_KEY',
-    clientKey : 'YOUR_CLIENT_KEY'
+  isProduction: false,
+  serverKey: 'YOUR_SERVER_KEY',
+  clientKey: 'YOUR_CLIENT_KEY',
 });
 
 // To use API subscription for credit card, you should first obtain the 1 click token
@@ -26,40 +26,40 @@ let core = new midtransClient.CoreApi({
 //  ..
 // }
 // Sample saved token id for testing purpose
-let savedTokenId = '521111gmWqMegyejqCQmmopnCFRs1117'
-
+let savedTokenId = '521111gmWqMegyejqCQmmopnCFRs1117';
 
 // prepare CORE API parameter ( refer to: https://api-docs.midtrans.com/#create-subscription ) create subscription parameter example
 let parameter = {
-    "name": "MONTHLY_2021",
-    "amount": "14000",
-    "currency": "IDR",
-    "payment_type": "credit_card",
-    "token": savedTokenId,
-    "schedule": {
-        "interval": 1,
-        "interval_unit": "month",
-        "max_interval": 12,
-        "start_time": "2021-11-25 07:25:01 +0700"
-    },
-    "metadata": {
-        "description": "Recurring payment for A"
-    },
-    "customer_details": {
-        "first_name": "John",
-        "last_name": "Doe",
-        "email": "johndoe@email.com",
-        "phone": "+62812345678"
-    }
+  name: 'MONTHLY_2021',
+  amount: '14000',
+  currency: 'IDR',
+  payment_type: 'credit_card',
+  token: savedTokenId,
+  schedule: {
+    interval: 1,
+    interval_unit: 'month',
+    max_interval: 12,
+    start_time: '2021-11-25 07:25:01 +0700',
+  },
+  metadata: {
+    description: 'Recurring payment for A',
+  },
+  customer_details: {
+    first_name: 'John',
+    last_name: 'Doe',
+    email: 'johndoe@email.com',
+    phone: '+62812345678',
+  },
 };
 
-core.createSubscription(parameter)
-    .then((Response) => {
-        console.log('createSubscription Response:', JSON.stringify(Response));
-    })
-    .catch((e) => {
-        console.log('createSubscription Error message:', e.message);
-    });
+core
+  .createSubscription(parameter)
+  .then((Response) => {
+    console.log('createSubscription Response:', JSON.stringify(Response));
+  })
+  .catch((e) => {
+    console.log('createSubscription Error message:', e.message);
+  });
 // sample response is dictionary representation of API JSON response
 // {
 //     "id": "537d04c6-eef7-4c07-a65c-11c55f92c7ed",
@@ -91,49 +91,53 @@ core.createSubscription(parameter)
 // }
 
 // Sample active subscription id for testing purpose
-let subscriptionId = "537d04c6-eef7-4c07-a65c-11c55f92c7ed"
+let subscriptionId = '537d04c6-eef7-4c07-a65c-11c55f92c7ed';
 
 // get subscription by subscriptionId
-core.getSubscription(subscriptionId)
-    .then((Response) => {
-        console.log('getSubscription Response:', JSON.stringify(Response));
-    })
-    .catch((e) => {
-        console.log('getSubscription Error message:', e.message);
-    });
+core
+  .getSubscription(subscriptionId)
+  .then((Response) => {
+    console.log('getSubscription Response:', JSON.stringify(Response));
+  })
+  .catch((e) => {
+    console.log('getSubscription Error message:', e.message);
+  });
 
 // enable subscription by subscriptionId
-core.enableSubscription(subscriptionId)
-    .then((Response) => {
-        console.log('enableSubscription Response:', JSON.stringify(Response));
-    })
-    .catch((e) => {
-        console.log('enableSubscription Error message:', e.message);
-    });
+core
+  .enableSubscription(subscriptionId)
+  .then((Response) => {
+    console.log('enableSubscription Response:', JSON.stringify(Response));
+  })
+  .catch((e) => {
+    console.log('enableSubscription Error message:', e.message);
+  });
 
 // update subscription by subscriptionId and Param
 let updateSubscriptionParam = {
-    "name": "MONTHLY_2021",
-    "amount": "300000",
-    "currency": "IDR",
-    "token": savedTokenId,
-    "schedule": {
-        "interval": 1
-    }
-}
-core.updateSubscription(subscriptionId, updateSubscriptionParam)
-    .then((Response) => {
-        console.log('updateSubscription Response:', JSON.stringify(Response));
-    })
-    .catch((e) => {
-        console.log('updateSubscription Error message:', e.message);
-    });
+  name: 'MONTHLY_2021',
+  amount: '300000',
+  currency: 'IDR',
+  token: savedTokenId,
+  schedule: {
+    interval: 1,
+  },
+};
+core
+  .updateSubscription(subscriptionId, updateSubscriptionParam)
+  .then((Response) => {
+    console.log('updateSubscription Response:', JSON.stringify(Response));
+  })
+  .catch((e) => {
+    console.log('updateSubscription Error message:', e.message);
+  });
 
 // disable subscription by subscriptionId
-core.disableSubscription(subscriptionId)
-    .then((Response) => {
-        console.log('disableSubscription Response:', JSON.stringify(Response));
-    })
-    .catch((e) => {
-        console.log('disableSubscription Error message:', e.message);
-    });
+core
+  .disableSubscription(subscriptionId)
+  .then((Response) => {
+    console.log('disableSubscription Response:', JSON.stringify(Response));
+  })
+  .catch((e) => {
+    console.log('disableSubscription Error message:', e.message);
+  });

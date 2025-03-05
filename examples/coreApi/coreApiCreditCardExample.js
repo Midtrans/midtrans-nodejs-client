@@ -6,9 +6,9 @@ const midtransClient = require('./../../index.js');
 // Initialize core api client object
 // You can find it in Merchant Portal -> Settings -> Access keys
 let core = new midtransClient.CoreApi({
-    isProduction : false,
-    serverKey : 'YOUR_SERVER_KEY',
-    clientKey : 'YOUR_CLIENT_KEY'
+  isProduction: false,
+  serverKey: 'YOUR_SERVER_KEY',
+  clientKey: 'YOUR_CLIENT_KEY',
 });
 
 // Alternative way to initialize core api client object:
@@ -33,35 +33,36 @@ let core = new midtransClient.CoreApi({
 // prepare CORE API parameter to get credit card token
 // another sample of card number can refer to https://docs.midtrans.com/en/technical-reference/sandbox-test?id=card-payments
 let parameter = {
-    'card_number': '5264 2210 3887 4659',
-    'card_exp_month': '12',
-    'card_exp_year': '2025',
-    'card_cvv': '123',
-    'client_key': core.apiConfig.clientKey,
+  card_number: '5264 2210 3887 4659',
+  card_exp_month: '12',
+  card_exp_year: '2025',
+  card_cvv: '123',
+  client_key: core.apiConfig.clientKey,
 };
-core.cardToken(parameter)
-    .then((cardTokenResponse)=>{
-        // prepare CORE API parameter to charge credit card ( refer to: https://docs.midtrans.com/en/core-api/credit-card?id=_2-sending-transaction-data-to-charge-api )
-        let cardToken = cardTokenResponse.token_id;
-        let parameter = {
-            "payment_type": "credit_card",
-            "transaction_details": {
-                "gross_amount": 12145,
-                "order_id": "test-transaction-54321",
-            },
-            "credit_card":{
-                "token_id": cardToken
-            }
-        };
+core
+  .cardToken(parameter)
+  .then((cardTokenResponse) => {
+    // prepare CORE API parameter to charge credit card ( refer to: https://docs.midtrans.com/en/core-api/credit-card?id=_2-sending-transaction-data-to-charge-api )
+    let cardToken = cardTokenResponse.token_id;
+    let parameter = {
+      payment_type: 'credit_card',
+      transaction_details: {
+        gross_amount: 12145,
+        order_id: 'test-transaction-54321',
+      },
+      credit_card: {
+        token_id: cardToken,
+      },
+    };
 
-        return core.charge(parameter);
-    })
-    .then((chargeResponse)=>{
-        console.log('chargeResponse:',JSON.stringify(chargeResponse));
-    })
-    .catch((e)=>{
-        console.log('Error occured:',e.message);
-    });;
+    return core.charge(parameter);
+  })
+  .then((chargeResponse) => {
+    console.log('chargeResponse:', JSON.stringify(chargeResponse));
+  })
+  .catch((e) => {
+    console.log('Error occured:', e.message);
+  });
 
 // charge_response is object representation of API JSON response
 // sample:

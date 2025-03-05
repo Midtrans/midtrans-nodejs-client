@@ -6,29 +6,30 @@ const midtransClient = require('./../../index.js');
 // Initialize core api client object
 // You can find it in Merchant Portal -> Settings -> Access keys
 let core = new midtransClient.CoreApi({
-    isProduction : false,
-    serverKey : 'YOUR_SERVER_KEY',
-    clientKey : 'YOUR_CLIENT_KEY'
+  isProduction: false,
+  serverKey: 'YOUR_SERVER_KEY',
+  clientKey: 'YOUR_CLIENT_KEY',
 });
 
 // prepare CORE API parameter ( refer to: https://docs.midtrans.com/en/core-api/bank-transfer?id=sample-request-and-request-body ) charge bank_transfer parameter example
 let parameter = {
-    "payment_type": "bank_transfer",
-    "transaction_details": {
-        "gross_amount": 24145,
-        "order_id": "test-transaction-321",
-    },
-    "bank_transfer":{
-        "bank": "bni"
-    }
+  payment_type: 'bank_transfer',
+  transaction_details: {
+    gross_amount: 24145,
+    order_id: 'test-transaction-321',
+  },
+  bank_transfer: {
+    bank: 'bni',
+  },
 };
-core.charge(parameter)
-    .then((chargeResponse)=>{
-        console.log('chargeResponse:',JSON.stringify(chargeResponse));
-    })
-    .catch((e)=>{
-        console.log('Error occured:',e.message);
-    });;
+core
+  .charge(parameter)
+  .then((chargeResponse) => {
+    console.log('chargeResponse:', JSON.stringify(chargeResponse));
+  })
+  .catch((e) => {
+    console.log('Error occured:', e.message);
+  });
 
 // charge_response is dictionary representation of API JSON response
 // sample:

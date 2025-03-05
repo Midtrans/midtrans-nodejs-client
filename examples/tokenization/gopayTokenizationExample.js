@@ -6,29 +6,30 @@ const midtransClient = require('../../index.js');
 // Initialize core api client object
 // You can find it in Merchant Portal -> Settings -> Access keys
 let core = new midtransClient.CoreApi({
-    isProduction : false,
-    serverKey : 'YOUR_SERVER_KEY',
-    clientKey : 'YOUR_CLIENT_KEY'
+  isProduction: false,
+  serverKey: 'YOUR_SERVER_KEY',
+  clientKey: 'YOUR_CLIENT_KEY',
 });
 
 // prepare CORE API parameter ( refer to: https://api-docs.midtrans.com/#create-pay-account ) create pay charge parameter example
 let parameter = {
-    "payment_type": "gopay",
-    "gopay_partner": {
-        "phone_number": "81212345678",
-        "country_code": "62",
-        "redirect_url": "https://www.gojek.com"
-    }
+  payment_type: 'gopay',
+  gopay_partner: {
+    phone_number: '81212345678',
+    country_code: '62',
+    redirect_url: 'https://www.gojek.com',
+  },
 };
 
 // link Payment Account
-core.linkPaymentAccount(parameter)
-    .then((Response)=>{
-        console.log('Response:',JSON.stringify(Response));
-    })
-    .catch((e)=>{
-        console.log('Error occured:',e.message);
-    });
+core
+  .linkPaymentAccount(parameter)
+  .then((Response) => {
+    console.log('Response:', JSON.stringify(Response));
+  })
+  .catch((e) => {
+    console.log('Error occured:', e.message);
+  });
 
 // link_payment_account_response is dictionary representation of API JSON response
 // sample response :
@@ -57,16 +58,17 @@ core.linkPaymentAccount(parameter)
 // for the first link, the account status is PENDING, you must activate it by accessing one of the URLs on the actions object
 
 // Sample active account id for testing purpose
-let activeAccountId = "f4b02398-dabd-4619-b9be-576925c1a50a"
+let activeAccountId = 'f4b02398-dabd-4619-b9be-576925c1a50a';
 
 // Get payment account by account id
-core.getPaymentAccount(activeAccountId)
-    .then((Response)=>{
-        console.log('Response:',JSON.stringify(Response));
-    })
-    .catch((e)=>{
-        console.log('Error occured:',e.message);
-    });
+core
+  .getPaymentAccount(activeAccountId)
+  .then((Response) => {
+    console.log('Response:', JSON.stringify(Response));
+  })
+  .catch((e) => {
+    console.log('Error occured:', e.message);
+  });
 // sample response :
 // {
 //     "status_code": "200",
@@ -122,31 +124,32 @@ core.getPaymentAccount(activeAccountId)
 //     }
 // }
 
-function generateTimestamp(devider=1){
-    return Math.round((new Date()).getTime() / devider);
+function generateTimestamp(devider = 1) {
+  return Math.round(new Date().getTime() / devider);
 }
 
 // request charge
 let params = {
-    "payment_type": "gopay",
-    "gopay": {
-        "account_id": activeAccountId,
-        "payment_option_token": "ba42566b-a04b-4757-918e-428a9b222195",
-        "callback_url": "https://mywebstore.com/gopay-linking-finish"
-    },
-    "transaction_details": {
-        "gross_amount": 10000,
-        "order_id": "Gopaylink-sample-"+generateTimestamp()
-    }
-}
+  payment_type: 'gopay',
+  gopay: {
+    account_id: activeAccountId,
+    payment_option_token: 'ba42566b-a04b-4757-918e-428a9b222195',
+    callback_url: 'https://mywebstore.com/gopay-linking-finish',
+  },
+  transaction_details: {
+    gross_amount: 10000,
+    order_id: 'Gopaylink-sample-' + generateTimestamp(),
+  },
+};
 
-core.charge(params)
-    .then((chargeResponse)=>{
-        console.log('chargeResponse:',JSON.stringify(chargeResponse));
-    })
-    .catch((e)=>{
-        console.log('Error occured:',e.message);
-    })
+core
+  .charge(params)
+  .then((chargeResponse) => {
+    console.log('chargeResponse:', JSON.stringify(chargeResponse));
+  })
+  .catch((e) => {
+    console.log('Error occured:', e.message);
+  });
 // sample response :
 // {
 //     "status_code": "200",
@@ -171,10 +174,11 @@ core.charge(params)
 //     "status_message": "Account status cannot be updated.",
 //     "id": "358fdb22-1be2-4e6d-888d-b6703d60af6e"
 // }
-core.unlinkPaymentAccount(activeAccountId)
-    .then((Response)=>{
-        console.log('Response:',JSON.stringify(Response));
-    })
-    .catch((e)=>{
-        console.log('Error occured:',e.message);
-    })
+core
+  .unlinkPaymentAccount(activeAccountId)
+  .then((Response) => {
+    console.log('Response:', JSON.stringify(Response));
+  })
+  .catch((e) => {
+    console.log('Error occured:', e.message);
+  });

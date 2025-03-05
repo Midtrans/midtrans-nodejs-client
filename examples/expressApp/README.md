@@ -11,9 +11,10 @@ Midtrans Snap with Express (Node JS).
 2. Clone the repository, open terminal in this `expressApp` folder.
 3. Install dependencies `npm install`
 4. Run the web server using:
-	- `node app.js`, or
-	- `npm start`, or
-  - \*for development `npm run start:dev`
+   - `node app.js`, or
+   - `npm start`, or
+
+- \*for development `npm run start:dev`
 
 ## Usage
 
@@ -21,6 +22,7 @@ The app will run at port 3000.
 Open `localhost:3000` from browser.
 
 To test `/notification_handler`, you can execute this CURL:
+
 ```bash
 curl -X POST \
   http://localhost:3000/notification_handler \
@@ -46,9 +48,11 @@ curl -X POST \
   "approval_code": "1541395013424"
 }'
 ```
+
 Or point your `notification url` on Midtrans dashboard to `/notification_handler` url. Then do some transaction/payment on sandbox, then check your app log.
 
 ## Run With Docker
+
 > required: Docker installed.
 
 - First time to build & run: `docker build -t midexpress . && docker run -p 3000:3000 --rm -it midexpress`.

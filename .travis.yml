@@ -1,11 +1,11 @@
 language: node_js
 node_js:
-  - "node"
-  - "lts/*"
-  - "15"
-  - "14"
-  - "12"
-  - "10"
+  - 'node'
+  - 'lts/*'
+  - '15'
+  - '14'
+  - '12'
+  - '10'
   # - "8" # Node v8 is no longer officially supported by NodeJS
 install:
   - npm install --dev
