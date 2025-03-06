@@ -1,4 +1,5 @@
-// This is just for very basic implementation reference, in production, you should validate the incoming requests and implement your backend more securely.
+// This is just for very basic implementation reference, in production, you
+// should validate the incoming requests and implement your backend more securely.
 
 const express = require('express');
 const midtransClient = require('midtrans-client');
