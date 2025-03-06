@@ -1,8 +1,11 @@
-'use strict';
-
-const expect = require('chai').expect;
-const HttpClient = require('./../lib/httpClient');
-const cons = require('./sharedConstants');
+import { expect } from 'chai';
+import { HttpClient } from '../lib/httpClient.js';
+import {
+  serverKey,
+  SNAP_SANDBOX_BASE_URL,
+  CORE_SANDBOX_BASE_URL,
+  clientKey,
+} from './sharedConstants.js';
 
 function generateParamMin() {
   return {
@@ -37,8 +40,8 @@ describe('httpClient.js', () => {
     return httpClient
       .request(
         'post',
-        cons.serverKey,
-        cons.SNAP_SANDBOX_BASE_URL + '/transactions',
+        serverKey,
+        SNAP_SANDBOX_BASE_URL + '/transactions',
         generateParamMin()
       )
       .then((res) => {
@@ -53,18 +56,13 @@ describe('httpClient.js', () => {
   it('able to raw request GET Token to Core Api', () => {
     let httpClient = new HttpClient();
     return httpClient
-      .request(
-        'get',
-        cons.serverKey,
-        cons.CORE_SANDBOX_BASE_URL + '/v2/token',
-        {
-          card_number: '5264 2210 3887 4659',
-          card_exp_month: '12',
-          card_exp_year: new Date().getFullYear() + 1 + '',
-          card_cvv: '123',
-          client_key: cons.clientKey,
-        }
-      )
+      .request('get', serverKey, CORE_SANDBOX_BASE_URL + '/v2/token', {
+        card_number: '5264 2210 3887 4659',
+        card_exp_month: '12',
+        card_exp_year: new Date().getFullYear() + 1 + '',
+        card_cvv: '123',
+        client_key: clientKey,
+      })
       .then((res) => {
         expect(res).to.have.property('token_id');
         expect(res.token_id).to.be.a('string');
@@ -79,8 +77,8 @@ describe('httpClient.js', () => {
     return httpClient
       .request(
         'post',
-        cons.serverKey,
-        cons.SNAP_SANDBOX_BASE_URL + '/transactions',
+        serverKey,
+        SNAP_SANDBOX_BASE_URL + '/transactions',
         'not json'
       )
       .then((res) => {})

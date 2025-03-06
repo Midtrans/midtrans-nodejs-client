@@ -1,10 +1,8 @@
-'use strict';
 // @TODO continue and create thorough test for IRIS
 
-const expect = require('chai').expect;
-const midtransClient = require('./../index.js');
-const Iris = midtransClient.Iris;
-const cons = require('./sharedConstants');
+import { expect } from 'chai';
+import { Iris } from '../index.js';
+import { irisApiKey } from './sharedConstants.js';
 let globVar = {};
 
 describe('Iris.js', () => {
@@ -37,8 +35,8 @@ describe('Iris.js', () => {
     let iris = new Iris();
     expect(iris.apiConfig.get().serverKey).to.be.equals('');
     expect(iris.apiConfig.get().isProduction).to.be.false;
-    iris.apiConfig.set({ serverKey: cons.irisApiKey });
-    expect(iris.apiConfig.get().serverKey).to.be.equals(cons.irisApiKey);
+    iris.apiConfig.set({ serverKey: irisApiKey });
+    expect(iris.apiConfig.get().serverKey).to.be.equals(irisApiKey);
     expect(iris.apiConfig.get().isProduction).to.be.false;
   });
 
@@ -46,8 +44,8 @@ describe('Iris.js', () => {
     let iris = new Iris();
     expect(iris.apiConfig.get().serverKey).to.be.equals('');
     expect(iris.apiConfig.get().isProduction).to.be.false;
-    iris.apiConfig.serverKey = cons.irisApiKey;
-    expect(iris.apiConfig.get().serverKey).to.be.equals(cons.irisApiKey);
+    iris.apiConfig.serverKey = irisApiKey;
+    expect(iris.apiConfig.get().serverKey).to.be.equals(irisApiKey);
     expect(iris.apiConfig.get().isProduction).to.be.false;
   });
 
@@ -267,6 +265,6 @@ function generateTimestamp(devider = 1) {
 function generateConfig() {
   return {
     isProduction: false,
-    serverKey: cons.irisApiKey,
+    serverKey: irisApiKey,
   };
 }

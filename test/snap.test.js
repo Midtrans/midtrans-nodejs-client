@@ -1,9 +1,6 @@
-'use strict';
-
-const expect = require('chai').expect;
-const midtransClient = require('./../index.js');
-const Snap = midtransClient.Snap;
-const cons = require('./sharedConstants');
+import { expect } from 'chai';
+import { Snap } from '../index.js';
+import { serverKey, clientKey } from './sharedConstants.js';
 
 describe('Snap.js', () => {
   it('able to start test', () => {
@@ -82,8 +79,8 @@ describe('Snap.js', () => {
     expect(snap.apiConfig.get().serverKey).to.be.equals('');
     expect(snap.apiConfig.get().clientKey).to.be.equals('abc');
     expect(snap.apiConfig.get().isProduction).to.be.false;
-    snap.apiConfig.set({ serverKey: cons.serverKey });
-    expect(snap.apiConfig.get().serverKey).to.be.equals(cons.serverKey);
+    snap.apiConfig.set({ serverKey });
+    expect(snap.apiConfig.get().serverKey).to.be.equals(serverKey);
     expect(snap.apiConfig.get().clientKey).to.be.equals('abc');
     expect(snap.apiConfig.get().isProduction).to.be.false;
   });
@@ -93,8 +90,8 @@ describe('Snap.js', () => {
     expect(snap.apiConfig.get().serverKey).to.be.equals('');
     expect(snap.apiConfig.get().clientKey).to.be.equals('abc');
     expect(snap.apiConfig.get().isProduction).to.be.false;
-    snap.apiConfig.serverKey = cons.serverKey;
-    expect(snap.apiConfig.get().serverKey).to.be.equals(cons.serverKey);
+    snap.apiConfig.serverKey = serverKey;
+    expect(snap.apiConfig.get().serverKey).to.be.equals(serverKey);
     expect(snap.apiConfig.get().clientKey).to.be.equals('abc');
     expect(snap.apiConfig.get().isProduction).to.be.false;
   });
@@ -215,8 +212,8 @@ function generateTimestamp(devider = 1) {
 function generateConfig() {
   return {
     isProduction: false,
-    serverKey: cons.serverKey,
-    clientKey: cons.clientKey,
+    serverKey,
+    clientKey,
   };
 }
 

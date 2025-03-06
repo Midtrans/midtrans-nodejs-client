@@ -1,9 +1,8 @@
 'use strict';
 
-const expect = require('chai').expect;
-const midtransClient = require('./../index.js');
-const CoreApi = midtransClient.CoreApi;
-const cons = require('./sharedConstants');
+import { expect } from 'chai';
+import { CoreApi } from '../index.js';
+import { serverKey, clientKey } from './sharedConstants.js';
 
 let tokenId = '';
 let savedTokenId = '';
@@ -206,8 +205,8 @@ describe('CoreApi.js', () => {
     expect(core.apiConfig.get().serverKey).to.be.equals('');
     expect(core.apiConfig.get().clientKey).to.be.equals('abc');
     expect(core.apiConfig.get().isProduction).to.be.false;
-    core.apiConfig.set({ serverKey: cons.serverKey });
-    expect(core.apiConfig.get().serverKey).to.be.equals(cons.serverKey);
+    core.apiConfig.set({ serverKey });
+    expect(core.apiConfig.get().serverKey).to.be.equals(serverKey);
     expect(core.apiConfig.get().clientKey).to.be.equals('abc');
     expect(core.apiConfig.get().isProduction).to.be.false;
   });
@@ -217,8 +216,8 @@ describe('CoreApi.js', () => {
     expect(core.apiConfig.get().serverKey).to.be.equals('');
     expect(core.apiConfig.get().clientKey).to.be.equals('abc');
     expect(core.apiConfig.get().isProduction).to.be.false;
-    core.apiConfig.serverKey = cons.serverKey;
-    expect(core.apiConfig.get().serverKey).to.be.equals(cons.serverKey);
+    core.apiConfig.serverKey = serverKey;
+    expect(core.apiConfig.get().serverKey).to.be.equals(serverKey);
     expect(core.apiConfig.get().clientKey).to.be.equals('abc');
     expect(core.apiConfig.get().isProduction).to.be.false;
   });
@@ -409,8 +408,8 @@ function generateTimestamp(devider = 1) {
 function generateConfig() {
   return {
     isProduction: false,
-    serverKey: cons.serverKey,
-    clientKey: cons.clientKey,
+    serverKey,
+    clientKey,
   };
 }
 
