@@ -1,9 +1,9 @@
-const Snap = require('./lib/snap');
-const CoreApi = require('./lib/coreApi');
-const Iris = require('./lib/iris');
-const MidtransError = require('./lib/midtransError');
-const SnapBiConfig = require('./lib/snapBi/snapBiConfig');
-const SnapBi = require('./lib/snapBi/snapBi');
+import Snap from './lib/snap';
+import CoreApi from './lib/coreApi';
+import Iris from './lib/iris';
+import MidtransError from './lib/midtransError';
+import SnapBiConfig from './lib/snapBi/snapBiConfig';
+import SnapBi from './lib/snapBi/snapBi';
 const Midtrans = {
   Snap,
   CoreApi,
@@ -12,4 +12,5 @@ const Midtrans = {
   SnapBiConfig,
   SnapBi,
 };
-module.exports = Midtrans;
+
+export default Midtrans;

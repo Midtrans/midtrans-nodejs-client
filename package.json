@@ -7,6 +7,7 @@
     "test": "mocha",
     "format": "prettier --write ."
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/midtrans/midtrans-nodejs-client.git"
